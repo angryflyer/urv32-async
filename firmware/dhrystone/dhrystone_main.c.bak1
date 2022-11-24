@@ -1,0 +1,67 @@
+// See LICENSE for license details.
+
+//**************************************************************************
+// Dhrystone bencmark
+//--------------------------------------------------------------------------
+//
+// This is the classic Dhrystone synthetic integer benchmark.
+//
+
+//#pragma GCC optimize ("O3")
+
+#include "dhrystone.h"
+
+#ifdef USE_MYSTDLIB
+  extern char     *malloc ();
+#else
+  #include <stdlib.h>
+  #include <string.h>
+  // #include "log.h"
+  // #include "timer.h"
+  // #include <alloca.h>
+#endif
+
+static void printf_c(int c)
+{
+	*((volatile int*)0x10000000) = c;
+}
+
+static void printf_s(char *p)
+{
+	while (*p)
+		*((volatile int*)0x10000000) = *(p++);
+}
+
+static void printf_d(int val)
+{
+	char buffer[32];
+	char *p = buffer;
+	if (val < 0) {
+		printf_c('-');
+		val = -val;
+	}
+	while (val || p == buffer) {
+		*(p++) = '0' + val % 10;
+		val = val / 10;
+	}
+	while (p != buffer)
+		printf_c(*(--p));
+}
+
+int main (void)
+{
+	uint32_t    Begin_Time,
+				End_Time,
+				User_Time;
+	Start_Timer();
+	char hello[] = "hello world!"; 
+	unsigned char value = 255;
+	printf("hello world!=%s\n",hello);
+	printf("hello world!=%d\n",value);
+	Stop_Timer();
+	User_Time = End_Time - Begin_Time;
+	printf("Begin_Time=%d,End_Time=%d\n", Begin_Time, End_Time);
+	printf("User_Time=%d\n", User_Time);
+	// printf_s(hello);
+	return true;
+}

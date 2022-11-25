@@ -70,7 +70,7 @@
 
     //RV32M Standard Extension
     `define R_INST_MUL    "MUL"
-    `define R_INST_MULH   "MULU"
+    `define R_INST_MULH   "MULH"
     `define R_INST_MULHSU "MULHSU"
     `define R_INST_MULHU  "MULHU"
     `define R_INST_DIV    "DIV"

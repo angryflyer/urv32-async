@@ -75,6 +75,7 @@ module idu
     output [31:0] id2iex_rd2,	
     output        id2iex_alu_op2_sel,
     output [3:0]  id2iex_alu_op,
+    output        id2iex_mul_valid,
     output        id2iex_mem_we,
     output        id2iex_mem_re,
     output [2:0]  id2iex_mem_byte_sel,
@@ -369,24 +370,10 @@ module idu
 		endcase
 	end	
 
-    // mul/div op encode
-    wire mul_op_valid;
+    // mul/div valid
+    wire id2iex_mul_valid;
     wire is_mul_div;
-    wire [2:0] mul_op;
-    assign mul_op_valid = is_mul_div;
-    assign mul_op       = {3{mul_op_valid}} & inst_func3; 
-
-muldiv muldiv_u(
-	.clk(clk),
-	.rstn(rstn),
-    .op_stall(1'b0),
-	.op_valid(mul_op_valid),
-	.op_ready(),
-    .op(),
-	.op1(32'hffffffff),
-	.op2(32'hffffffff),
-    .op_do()
-);
+    assign id2iex_mul_valid = is_mul_div;
 
 	//expand signed imm
 	assign inst_u_imm = {reg_id_inst[31:12], 12'b0};

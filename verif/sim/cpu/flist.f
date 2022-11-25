@@ -8,6 +8,7 @@
 ../../../rtl/core/pc.v
 ../../../rtl/core/ifu.v
 ../../../rtl/core/muldiv.sv
+../../../rtl/core/muldiv_vio.sv
 ../../../rtl/core/idu.v
 ../../../rtl/core/exu.v
 ../../../rtl/core/lsu.sv

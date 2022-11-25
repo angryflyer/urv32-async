@@ -75,6 +75,7 @@ wire [1:0]  id2iex_rf_rd_sel0;
 wire        id2iex_rf_rd_sel1;
 wire        id2iex_alu_op2_sel;
 wire [3:0]  id2iex_alu_op;
+wire        id2iex_mul_valid;
 wire        id2iex_mem_we;
 wire        id2iex_mem_re;
 wire [2:0]  id2iex_mem_byte_sel;
@@ -120,6 +121,7 @@ wire [4:0]  id2rf_raddr2;
 
 wire if2ac_hazard;
 wire id2ac_hazard;
+wire iex2ac_hazard;
 wire ac2if_stall;
 wire ac2id_stall;
 wire ac2iex_stall;
@@ -200,6 +202,7 @@ acu acu_u(
 
     .if2ac_hazard(if2ac_hazard),
     .id2ac_hazard(id2ac_hazard),
+    .iex2ac_hazard(iex2ac_hazard),
     .lsu2ac_hazard(lsu2ac_hazard),
     .wb2ac_hazard(wb2ac_hazard),
     .dbg2ac_stall(1'b0),
@@ -432,6 +435,7 @@ exu exu_u(
     .id2iex_rf_rd_sel1(id2iex_rf_rd_sel1),
     .id2iex_alu_op2_sel(id2iex_alu_op2_sel),
     .id2iex_alu_op(id2iex_alu_op),
+    .id2iex_mul_valid(id2iex_mul_valid),
     .id2iex_mem_we(id2iex_mem_we),
     .id2iex_mem_re(id2iex_mem_re),
     .id2iex_mem_byte_sel(id2iex_mem_byte_sel),
@@ -511,7 +515,9 @@ exu exu_u(
     .flush_type(flush_type),        //0->miss, 1->hit
     .flush_addr(flush_addr), //record 6 kinds of branch instruction
     .flush_bp_pc(flush_bp_pc),
-    .flush_pc(flush_pc)
+    .flush_pc(flush_pc),
+
+    .iex2ac_hazard(iex2ac_hazard)
 );
 
 idu idu_u(
@@ -572,6 +578,7 @@ idu idu_u(
     .id2iex_rd2(id2iex_rd2),
     .id2iex_alu_op2_sel(id2iex_alu_op2_sel),
     .id2iex_alu_op(id2iex_alu_op),
+    .id2iex_mul_valid(id2iex_mul_valid),
     .id2iex_mem_we(id2iex_mem_we),
     .id2iex_mem_re(id2iex_mem_re),
     .id2iex_mem_byte_sel(id2iex_mem_byte_sel),

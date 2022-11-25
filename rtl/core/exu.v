@@ -25,6 +25,7 @@ module exu (
     input        id2iex_rf_rd_sel1,
     input        id2iex_alu_op2_sel,
     input [3:0]  id2iex_alu_op,
+    input        id2iex_mul_valid,
     input        id2iex_mem_we,
     input        id2iex_mem_re,
     input [2:0]  id2iex_mem_byte_sel,
@@ -113,7 +114,9 @@ module exu (
     output  flush_type,        //0->miss, 1->hit
     output  [`BP_ADDR_W-1:0]  flush_addr, //record 32 branch instruction pc
     output  [31:0] flush_bp_pc,
-    output  [31:0] flush_pc
+    output  [31:0] flush_pc,
+
+    output  iex2ac_hazard
 );
 
 	reg        reg_iex_valid;
@@ -136,6 +139,7 @@ module exu (
 	reg        reg_iex_rf_rd_sel1;
 	reg        reg_iex_alu_op2_sel;
 	reg [3:0]  reg_iex_alu_op;
+    reg        reg_iex_mul_valid;
 	reg        reg_iex_mem_we;
 	reg        reg_iex_mem_re;
 	reg [2:0]  reg_iex_mem_byte_sel;
@@ -167,6 +171,7 @@ module exu (
 			reg_iex_rf_rd_sel1 <= `DEASSERT;
 			reg_iex_alu_op2_sel<= `DEASSERT;
 			reg_iex_alu_op     <= `ALU_OP_ADD;
+            reg_iex_mul_valid  <= `DEASSERT;
 			reg_iex_mem_we     <= `DEASSERT;
 			reg_iex_mem_re     <= `DEASSERT;
 			reg_iex_mem_byte_sel <= 3'h0;
@@ -185,7 +190,7 @@ module exu (
 			reg_iex_bp_taken   <= `DEASSERT;
 			reg_iex_bp_match   <= `DEASSERT;
 			reg_iex_bp_addr    <= `WORD_DEASSERT;
-		end else if(~ac2iex_stall) begin
+		end else if(~(ac2iex_stall | iex2ac_hazard)) begin
 			reg_iex_valid      <= id2iex_valid;
 			reg_iex_pc         <= id2iex_pc;
 			reg_iex_pc_plus    <= id2iex_pc_plus;
@@ -199,6 +204,7 @@ module exu (
 			reg_iex_rf_rd_sel1 <= id2iex_rf_rd_sel1;
 			reg_iex_alu_op2_sel<= id2iex_alu_op2_sel;
 			reg_iex_alu_op     <= id2iex_alu_op;
+            reg_iex_mul_valid  <= id2iex_mul_valid;
 			reg_iex_mem_we     <= id2iex_mem_we;
 			reg_iex_mem_re     <= id2iex_mem_re;
 			reg_iex_mem_byte_sel <= id2iex_mem_byte_sel;
@@ -300,7 +306,9 @@ module exu (
     assign iex_csr_rd = reg_iex_csr_rd;
 
 	//alu and op sel
-	wire [31:0] alu_op1, alu_op2, alu_out;
+	wire [31:0] alu_op1, alu_op2, alu_nmul_out;
+    wire [31:0] alu_mul_out;
+    wire [31:0] alu_out;
 	wire alu_comp_out, pc_src1;
 	assign alu_op1 = reg_iex_csr_sel[1] ? iex_csr_rd : iex_rd1_src;
 	assign alu_op2 = reg_iex_csr_sel[0] ? ~iex_rd1_src 
@@ -312,8 +320,29 @@ module exu (
 		.in0(alu_op1),
 		.in1(alu_op2),
 		.comp(alu_comp_out),
-		.out(alu_out)
+		.out(alu_nmul_out)
 	);
+
+	wire [2:0] inst_func3;
+    wire [2:0] alu_mul_op;
+    wire alu_mul_valid;
+    wire alu_mul_ready;
+    assign alu_mul_op = inst_func3; 
+    assign alu_mul_valid = reg_iex_valid && reg_iex_mul_valid && ~ac2iex_stall;
+
+    muldiv muldiv_u (
+        .clk(clk),
+        .rstn(rstn),
+        .op_stall(1'b0),
+        .op_valid(alu_mul_valid),
+        .op_ready(alu_mul_ready),
+        .op(alu_mul_op),
+        .op1(alu_op1),
+        .op2(alu_op2),
+        .op_out(alu_mul_out)
+    );
+    assign iex2ac_hazard = alu_mul_valid && ~alu_mul_ready;
+    assign alu_out = reg_iex_mul_valid ? alu_mul_out : alu_nmul_out;
 
 	wire [31:0] iex_pc_plus_imm;
 	wire bp_jump_valid;
@@ -396,7 +425,7 @@ module exu (
 
 	//obtain opcode and func
 	wire [4:0]   inst_op_type;
-	wire [2:0]   inst_func3;
+	// wire [2:0]   inst_func3;
     wire [4:0]   inst_func5;
 	wire [6:0]   inst_func7;
 	assign inst_op_type = reg_iex_inst[6:2];

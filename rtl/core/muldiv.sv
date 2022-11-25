@@ -2,16 +2,16 @@
 `include "macro.v"
 
 module muldiv (
-	input  clk,
-	input  rstn,
+    input  clk,
+    input  rstn,
 
     input  op_stall,
-	input  op_valid,
-	output op_ready,
+    input  op_valid,
+    output op_ready,
     input  [2:0]  op,
-	input  [31:0] op1,
-	input  [31:0] op2,
-    output [31:0] op_do
+    input  [31:0] op1,
+    input  [31:0] op2,
+    output [31:0] op_out
 );
 
     localparam COUNT_FLUSH_VAL = 31;
@@ -21,6 +21,20 @@ module muldiv (
         BUSY  = 2'b01,
         DONE  = 2'b10
     } state_t;
+
+    logic is_op1_signed, is_op2_signed;
+    logic is_mul, is_mulh, is_mulhsu, is_mulhu;
+    logic [63:0] mul_op1, mul_op2;
+    assign is_mul    = (op == `R_INST_FUNC3_MUL);
+    assign is_mulh   = (op == `R_INST_FUNC3_MULH);
+    assign is_mulhsu = (op == `R_INST_FUNC3_MULHSU);
+    assign is_mulhu  = (op == `R_INST_FUNC3_MULHU);
+
+    assign is_op1_signed = is_mul | is_mulh | is_mulhsu;
+    assign is_op2_signed = is_mul | is_mulh;
+
+    assign mul_op1 = {{32{is_op1_signed && op1[31]}},op1};
+    assign mul_op2 = {{32{is_op2_signed && op2[31]}},op2};
 
     logic curt_state;
     logic next_state;
@@ -42,7 +56,7 @@ module muldiv (
     assign is_idle  = (curt_state == IDLE);
     assign is_busy  = (curt_state == BUSY);
     assign count_d  = count_q - 1'b1;
-    assign count_flush = op_valid && (is_idle | (is_busy && count_done)) && ~op_stall;
+    assign count_flush = op_valid && is_idle && ~op_stall;
     assign count_en = is_busy && ~count_done | op_ready;
     stdffref #(5) ff_count_u (
         .clk(clk),
@@ -55,25 +69,27 @@ module muldiv (
     ); 
 
     logic [63:0] op1_d, op1_q;
-    assign op1_d = op1_q << 1'b1;
+    assign op1_d = {op1_q[62:0],1'b0};
     stdffref #(64) ff_op1_u (
         .clk(clk),
         .rstn(rstn),
         .flush(count_flush),
-        .flush_val(op1),
+        .flush_val(mul_op1),
         .en(count_en),
         .d(op1_d),
         .q(op1_q) 
     ); 
 
-    logic [31:0] op2_d, op2_q;
+    logic [63:0] op2_d, op2_q;
     logic op2_q_gate;
-    assign op2_d = op2;
-    assign op2_q_gate = op2_q[31-count_q];
-    stdffref #(32) ff_op2_u (
+    assign op2_d = {1'b0,op2_q[63:1]};
+    assign op2_q_gate = op2_q[0];
+    stdffref #(64) ff_op2_u (
         .clk(clk),
         .rstn(rstn),
-        .en(count_flush),
+        .flush(count_flush),
+        .flush_val(mul_op2),
+        .en(count_en),
         .d(op2_d),
         .q(op2_q) 
     );
@@ -101,14 +117,13 @@ module muldiv (
             end
             BUSY : begin
                 if(count_done) begin
-                    next_state = op_valid ? BUSY : IDLE;
-                end else begin
-                    next_state = BUSY;
+                    next_state = IDLE;
                 end     
             end
         endcase
     end
 
 assign op_ready = is_busy && count_done && ~op_stall;
+assign op_out   = is_mul ? op_result_d[31:0] : op_result_d[63:32];
 
 endmodule

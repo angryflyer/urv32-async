@@ -1,0 +1,6 @@
+
+Dhrystone Benchmark, Version C, Version 2.2
+Program compiled without 'register' attribute
+Using rdcycle(), HZ=0
+
+Trying 0 runs through Dhrystone:

@@ -13,6 +13,8 @@ module acu #(
     input if2ac_hazard,
     //from id
     input id2ac_hazard,
+    //from exu
+    input iex2ac_hazard,
     //from lsu
     input lsu2ac_hazard,
     //from wbu
@@ -51,8 +53,8 @@ module acu #(
     wire   pipe_stall;
     assign pipe_stall       = lsu2ac_hazard | wb2ac_hazard | dbg2ac_stall;
 
-    assign ac2if_stall      = pipe_stall | id2ac_hazard;
-    assign ac2id_stall      = pipe_stall | (id2ac_hazard && ~ac2if_flush);
+    assign ac2if_stall      = pipe_stall | id2ac_hazard | iex2ac_hazard;
+    assign ac2id_stall      = pipe_stall | (id2ac_hazard && ~ac2if_flush) | iex2ac_hazard;
     assign ac2iex_stall     = pipe_stall;
     assign ac2lsu_stall     = pipe_stall;
     assign ac2wb_stall      = pipe_stall;
@@ -61,7 +63,7 @@ module acu #(
     assign ac2if_flush      = iex2ac_jump_valid | trap_jump_valid;
     assign ac2if_flush_pc   = trap_jump_valid ? trap_jump_pc : iex2ac_jump_pc;
     assign ac2id_flush      = id2ac_hazard | ac2if_flush;
-    assign ac2iex_flush     = ac2iex_stall;
+    assign ac2iex_flush     = ac2iex_stall | iex2ac_hazard;
     assign ac2lsu_flush     = wb2ac_hazard;
     assign ac2csr_instret_stall = ~iex2lsu_valid;
 endmodule

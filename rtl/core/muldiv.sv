@@ -14,7 +14,7 @@ module muldiv (
     output [31:0] op_out
 );
 
-    localparam COUNT_FLUSH_VAL = 31;
+    localparam COUNT_FLUSH_VAL = 63;
 
     typedef enum logic [1:0] {
         IDLE  = 2'b00,
@@ -40,7 +40,7 @@ module muldiv (
     logic next_state;
     logic is_idle, is_busy;
 
-    logic [4:0] count_d, count_q;
+    logic [5:0] count_d, count_q;
     logic count_done;
     logic count_en;
     logic count_flush;
@@ -58,7 +58,7 @@ module muldiv (
     assign count_d  = count_q - 1'b1;
     assign count_flush = op_valid && is_idle && ~op_stall;
     assign count_en = is_busy && ~count_done | op_ready;
-    stdffref #(5) ff_count_u (
+    stdffref #(6) ff_count_u (
         .clk(clk),
         .rstn(rstn),
         .flush(count_flush),
@@ -106,7 +106,7 @@ module muldiv (
         .q(op_result_q) 
     );
 
-    assign count_done = (count_q == 5'h0);
+    assign count_done = (count_q == 6'h0);
     always_comb  begin
         next_state = curt_state;
         case(curt_state)

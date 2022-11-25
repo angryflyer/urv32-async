@@ -48,10 +48,10 @@ li a1, 0xffffffff
 li a3, 0x0
 # sw a0, 0(a3)
 # lw a1, 0(a3)
-# mul a2, a0, a1
+mul a2, a0, a1
 mulh a2, a0, a1
-# mulhsu a2, a0, a1
-# mulhu a2, a0, a1
+mulhsu a2, a0, a1
+mulhu a2, a0, a1
 # mul a2, a0, a1
 
 init_stack:

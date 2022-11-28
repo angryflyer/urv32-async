@@ -7,6 +7,7 @@
 ../../../rtl/core/acu.v
 ../../../rtl/core/pc.v
 ../../../rtl/core/ifu.v
+../../../rtl/core/div.sv
 ../../../rtl/core/muldiv.sv
 ../../../rtl/core/muldiv_vio.sv
 ../../../rtl/core/idu.v

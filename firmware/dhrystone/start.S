@@ -42,6 +42,13 @@ addi x29, zero, 0
 addi x30, zero, 0
 addi x31, zero, 0
 
+# div
+li a0, -15
+li a1, -2
+li a3, 0x0
+div a3, a0, a1
+rem a3, a0, a1
+
 # mul
 li a0, 0xffffffff
 li a1, 0xffffffff

@@ -53,7 +53,7 @@ CFLAGS += \
 	$(WARNINGS) $(INCLUDES) \
 	-fno-strict-aliasing -fno-builtin \
 	-mcmodel=medany -msmall-data-limit=8 -fsigned-char -ffunction-sections -fdata-sections \
-	-std=c++11  -march=rv32i -mabi=ilp32 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)"
+	-std=c++11  -march=rv32im -mabi=ilp32 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)"
 # CFLAGS += -msoft-float
 # MACROS += -U __riscv_atomic
 

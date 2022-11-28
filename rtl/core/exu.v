@@ -330,7 +330,7 @@ module exu (
     assign alu_mul_op = inst_func3; 
     assign alu_mul_valid = reg_iex_valid && reg_iex_mul_valid && ~ac2iex_stall;
 
-    muldiv muldiv_u (
+    muldiv_vio muldiv_u (
         .clk(clk),
         .rstn(rstn),
         .op_stall(1'b0),

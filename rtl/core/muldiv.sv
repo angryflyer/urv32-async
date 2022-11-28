@@ -22,9 +22,13 @@ module muldiv (
         DONE  = 2'b10
     } state_t;
 
-    logic is_op1_signed, is_op2_signed;
-    logic is_mul, is_mulh, is_mulhsu, is_mulhu;
-    logic [63:0] mul_op1, mul_op2;
+    logic  mul_op_valid;
+    logic  mul_op_ready;
+    logic  is_op1_signed, is_op2_signed;
+    logic  is_mul, is_mulh, is_mulhsu, is_mulhu;
+    logic  [63:0] mul_op1, mul_op2;
+    logic  [31:0] mul_op_out;
+
     assign is_mul    = (op == `R_INST_FUNC3_MUL);
     assign is_mulh   = (op == `R_INST_FUNC3_MULH);
     assign is_mulhsu = (op == `R_INST_FUNC3_MULHSU);
@@ -33,8 +37,10 @@ module muldiv (
     assign is_op1_signed = is_mul | is_mulh | is_mulhsu;
     assign is_op2_signed = is_mul | is_mulh;
 
-    assign mul_op1 = {{32{is_op1_signed && op1[31]}},op1};
-    assign mul_op2 = {{32{is_op2_signed && op2[31]}},op2};
+    assign mul_op_valid= op_valid && ~op[2];
+
+    assign mul_op1 = {32{mul_op_valid}} & {{32{is_op1_signed && op1[31]}},op1};
+    assign mul_op2 = {32{mul_op_valid}} & {{32{is_op2_signed && op2[31]}},op2};
 
     logic curt_state;
     logic next_state;
@@ -56,7 +62,7 @@ module muldiv (
     assign is_idle  = (curt_state == IDLE);
     assign is_busy  = (curt_state == BUSY);
     assign count_d  = count_q - 1'b1;
-    assign count_flush = op_valid && is_idle && ~op_stall;
+    assign count_flush = mul_op_valid && is_idle && ~op_stall;
     assign count_en = is_busy && ~count_done | op_ready;
     stdffref #(6) ff_count_u (
         .clk(clk),
@@ -111,7 +117,7 @@ module muldiv (
         next_state = curt_state;
         case(curt_state)
             IDLE : begin
-                if(op_valid) begin
+                if(mul_op_valid) begin
                     next_state = BUSY;
                 end
             end
@@ -123,7 +129,27 @@ module muldiv (
         endcase
     end
 
-assign op_ready = is_busy && count_done && ~op_stall;
-assign op_out   = is_mul ? op_result_d[31:0] : op_result_d[63:32];
+    assign mul_op_ready = is_busy && count_done && ~op_stall;
+    assign mul_op_out   = is_mul ? op_result_d[31:0] : op_result_d[63:32];
+
+
+    logic  div_op_valid;
+    logic  div_op_ready;
+    logic  [31:0] div_op_out;
+    assign div_op_valid= op_valid && op[2];
+    div div_u (
+        .clk(clk),
+        .rstn(rstn),
+        .op_stall(1'b0),
+        .op_valid(div_op_valid),
+        .op_ready(div_op_ready),
+        .op(op),
+        .op1(op1),
+        .op2(op2),
+        .op_out(div_op_out)
+    );
+
+    assign op_ready = mul_op_ready | div_op_ready;
+    assign op_out   = mul_op_valid ? mul_op_out : div_op_out;
 
 endmodule

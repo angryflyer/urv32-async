@@ -236,16 +236,17 @@ int main (void)
   Dhrystones_Per_Second = ((float)HZ  * Number_Of_Runs) / User_Time;//second
 
   // float    drystone = Dhrystones_Per_Second / 1757 / MHZ;
-  unsigned int drystone = Dhrystones_Per_Second * 100 / 1757 / MHZ;
-  unsigned int drystone_d = (unsigned int)drystone / 100;//int
-  unsigned int drystone_f = (unsigned int)(drystone) - drystone_d;//float: precise: 2 digital
-
+  unsigned int drystone = Dhrystones_Per_Second * 100 / 1757 / MHZ; // 116
+  unsigned int drystone_d = drystone / 100;//int 1
+  unsigned int drystone_f1 = (drystone / 10) - (drystone / 100) * 10;//float: precise: 2 digital -> 11 - 10
+  unsigned int drystone_f2 = (drystone / 1) - (drystone / 10) * 10;//float: precise: 2 digital -> 116 - 110
+  
   printf("User_Time for run through Dhrystone:        %ld\r\n", User_Time);
   printf("Microseconds for one run through Dhrystone: %ld\r\n", (unsigned int)Microseconds);
   printf("Dhrystones per Second:                      %ld\r\n", (unsigned int)Dhrystones_Per_Second);
   //printf("Dhrystones DMIPS per Second    :            %ld/100\r\n", Dhrystones_Per_Second * 100 / 1757 / MHZ);
   //printf("Dhrystones DMIPS per Second    :            %ld/100\r\n", Dhrystones_Per_Second * 100 / 1757 / MHZ);
-  printf("Dhrystones DMIPS per Second    :            %d.%2d\r\n", drystone_d, drystone_f);
+  printf("Dhrystones DMIPS per Second    :            %d.%d%d\r\n", drystone_d, drystone_f1, drystone_f2);
   return 0;
 }
 

@@ -373,16 +373,18 @@ for (i = 0; i < MULTITHREAD; i++)
     //                   / time_in_secs(total_time));
 
     //add for display float point
-    float        microseconds = total_time / (EE_TICKS_PER_SEC / 1000000);
+    float        microseconds = (float)total_time / (EE_TICKS_PER_SEC / 1000000);
     float        iterations_per_sec = ((float)EE_TICKS_PER_SEC * results[0].iterations) / total_time;
-    unsigned int time_secs_t = (microseconds / 1000000) * 1000;
-    unsigned int time_secs_d = (unsigned int)time_secs_t / 1000;//int
-    unsigned int time_secs_f = ((unsigned int)time_secs_t - time_secs_d);//float: precise: 3 digital
-    unsigned int iterations_t = iterations_per_sec * 1000;
-    unsigned int iterations_d = (unsigned int)iterations_t / 1000;//int
-    unsigned int iterations_f = ((unsigned int)iterations_t - iterations_d);//float: precise: 3 digital
-    ee_printf("Total time (Secs): %d.%d\n", time_secs_d , time_secs_f );
-    ee_printf("Iterations/Sec   : %d.%d\n", iterations_d, iterations_f);
+    unsigned int time_secs_t  = (microseconds / 1000000) * 1000; //   10.821  -> 10
+    unsigned int time_secs_d  = time_secs_t / 1000;//int         //  -> 0.010821 - 0
+    unsigned int time_secs_f1 = time_secs_t / 100 - time_secs_d * 10;// int -> 0 - 0
+    unsigned int time_secs_f2 = time_secs_t / 10  - (time_secs_t / 100) * 10;//int  -> 1 - 0
+    unsigned int iterations_t = iterations_per_sec * 1000; // ->92412
+    unsigned int iterations_d = iterations_t / 1000;//int     ->92
+    unsigned int iterations_f1 = iterations_t / 100 - iterations_d * 10;//int -> 924 - 920
+    unsigned int iterations_f2 = iterations_t / 10  - (iterations_t / 100) * 10;//int -> 9241 - 9240
+    ee_printf("Total time (Secs): %d.%d%d\n", time_secs_d , time_secs_f1,  time_secs_f2);
+    ee_printf("Iterations/Sec   : %d.%d%d\n", iterations_d, iterations_f1, iterations_f2);
 
 #endif
     if (time_in_secs(total_time) < 10)

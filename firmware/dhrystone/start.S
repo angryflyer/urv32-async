@@ -46,6 +46,8 @@ addi x31, zero, 0
 li a0, -15
 li a1, -2
 li a3, 0x0
+li a4, 0x20000
+lw a4, 0(a4)
 div a3, a0, a1
 rem a3, a0, a1
 

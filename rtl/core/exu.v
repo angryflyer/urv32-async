@@ -333,7 +333,7 @@ module exu (
     muldiv_vio muldiv_u (
         .clk(clk),
         .rstn(rstn),
-        .op_stall(1'b0),
+        .op_stall(ac2iex_stall),
         .op_valid(alu_mul_valid),
         .op_ready(alu_mul_ready),
         .op(alu_mul_op),

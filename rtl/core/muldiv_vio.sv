@@ -48,7 +48,7 @@ module muldiv_vio (
     div div_u (
         .clk(clk),
         .rstn(rstn),
-        .op_stall(1'b0),
+        .op_stall(op_stall),
         .op_valid(div_op_valid),
         .op_ready(div_op_ready),
         .op(op),

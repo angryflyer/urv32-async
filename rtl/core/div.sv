@@ -70,7 +70,7 @@ module div (
     assign is_busy  = (curt_state == BUSY);
     assign count_d  = count_q - 1'b1;
     assign count_flush = op_valid && is_idle && ~op_stall;
-    assign count_en = is_busy && ~count_done | op_ready;
+    assign count_en = is_busy && ~count_done && ~op_stall | op_ready;
     stdffref #(6) ff_count_u (
         .clk(clk),
         .rstn(rstn),

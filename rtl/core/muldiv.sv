@@ -39,8 +39,8 @@ module muldiv (
 
     assign mul_op_valid= op_valid && ~op[2];
 
-    assign mul_op1 = {32{mul_op_valid}} & {{32{is_op1_signed && op1[31]}},op1};
-    assign mul_op2 = {32{mul_op_valid}} & {{32{is_op2_signed && op2[31]}},op2};
+    assign mul_op1 = {{32{is_op1_signed && op1[31]}},op1};
+    assign mul_op2 = {{32{is_op2_signed && op2[31]}},op2};
 
     logic curt_state;
     logic next_state;
@@ -63,7 +63,7 @@ module muldiv (
     assign is_busy  = (curt_state == BUSY);
     assign count_d  = count_q - 1'b1;
     assign count_flush = mul_op_valid && is_idle && ~op_stall;
-    assign count_en = is_busy && ~count_done | op_ready;
+    assign count_en = is_busy && ~count_done && ~op_stall | mul_op_ready;
     stdffref #(6) ff_count_u (
         .clk(clk),
         .rstn(rstn),
@@ -140,7 +140,7 @@ module muldiv (
     div div_u (
         .clk(clk),
         .rstn(rstn),
-        .op_stall(1'b0),
+        .op_stall(op_stall),
         .op_valid(div_op_valid),
         .op_ready(div_op_ready),
         .op(op),

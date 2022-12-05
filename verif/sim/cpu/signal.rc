@@ -2,7 +2,7 @@ Magic 271485
 Revision Verdi_Q-2020.03-SP2
 
 ; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
-viewPort 0 25 1920 619 215 139
+viewPort 0 25 1920 570 215 139
 
 ; File list:
 ; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
@@ -16,16 +16,16 @@ signalSpacing 5
 
 ; windowTimeUnit is used for zoom, cursor & marker
 ; waveform viewport range
-zoom 1201243.835740 1446258.215998
-cursor 1296000.000000
+zoom 0.000000 9165921.826613
+cursor 1360000.000000
 marker 0.000000
 
 ; user define markers
 ; userMarker time_pos marker_name color linestyle
 ; visible top row signal index
-top 34
+top 44
 ; marker line index
-markerPos 53
+markerPos 54
 
 ; Run Time Signal and Member
 ; userBusMem member ...
@@ -133,12 +133,19 @@ addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/exu_u/muldiv_u/clk
 addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/exu_u/reg_iex_valid
 addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/exu_u/muldiv_u/op_valid
 addSignal -h 15 -holdScope op_ready
-addSignal -h 15 -holdScope mul_op2_neg
-addSignal -h 15 -holdScope mul_op1_neg
-addSignal -h 15 -holdScope mul_op1[32:0]
-addSignal -h 15 -holdScope mul_op2[32:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope mul_out[63:0]
-addSignal -h 15 -holdScope op_out[31:0]
+addSignal -h 15 -UNSIGNED -UDEC /cpu_top_tb/cpu_top_u/core_top_u/exu_u/muldiv_u/div_u/count_q[5:0]
+addSignal -h 15 -holdScope op_flush
+addSignal -h 15 -holdScope is_pre
+addSignal -h 15 -UNSIGNED -HEX -holdScope op1_q_sl[63:32]
+addSignal -h 15 -holdScope rff_div_op2_neg
+addSignal -h 15 -holdScope add_in0[31:0]
+addSignal -h 15 -holdScope add_in1[31:0]
+addSignal -h 15 -holdScope add_out[31:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope op1_q[63:0]
+addSignal -h 15 -holdScope op2_q[31:0]
+addSignal -h 15 -holdScope div_quot[31:0]
+addSignal -h 15 -holdScope div_rem[31:0]
+addSignal -h 15 -UNSIGNED -HEX /cpu_top_tb/cpu_top_u/core_top_u/exu_u/muldiv_u/op_out[31:0]
 addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/acu_u/pipe_stall
 addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/exu_u/alu_mul_ready
 addSignal -h 15 -holdScope iex2ac_hazard

@@ -45,6 +45,15 @@ addi x31, zero, 0
 # div
 li a0, -15
 li a1, -2
+li a3, 0x5a
+li a4, 0x20000
+sw a3, 0(a4)
+lw a4, 0(a4)
+div a3, a0, a1
+rem a3, a0, a1
+
+li a0, 32
+li a1, 10
 li a3, 0x0
 li a4, 0x20000
 lw a4, 0(a4)

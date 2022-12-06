@@ -2,7 +2,7 @@ Magic 271485
 Revision Verdi_Q-2020.03-SP2
 
 ; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
-viewPort 0 25 1920 570 215 139
+viewPort 0 25 1920 617 215 139
 
 ; File list:
 ; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
@@ -16,16 +16,16 @@ signalSpacing 5
 
 ; windowTimeUnit is used for zoom, cursor & marker
 ; waveform viewport range
-zoom 0.000000 9165921.826613
-cursor 1360000.000000
+zoom 1253795.008377 1510682.715430
+cursor 1392000.000000
 marker 0.000000
 
 ; user define markers
 ; userMarker time_pos marker_name color linestyle
 ; visible top row signal index
-top 44
+top 140
 ; marker line index
-markerPos 54
+markerPos 163
 
 ; Run Time Signal and Member
 ; userBusMem member ...
@@ -133,22 +133,12 @@ addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/exu_u/muldiv_u/clk
 addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/exu_u/reg_iex_valid
 addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/exu_u/muldiv_u/op_valid
 addSignal -h 15 -holdScope op_ready
-addSignal -h 15 -UNSIGNED -UDEC /cpu_top_tb/cpu_top_u/core_top_u/exu_u/muldiv_u/div_u/count_q[5:0]
-addSignal -h 15 -holdScope op_flush
-addSignal -h 15 -holdScope is_pre
-addSignal -h 15 -UNSIGNED -HEX -holdScope op1_q_sl[63:32]
-addSignal -h 15 -holdScope rff_div_op2_neg
-addSignal -h 15 -holdScope add_in0[31:0]
-addSignal -h 15 -holdScope add_in1[31:0]
-addSignal -h 15 -holdScope add_out[31:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope op1_q[63:0]
-addSignal -h 15 -holdScope op2_q[31:0]
-addSignal -h 15 -holdScope div_quot[31:0]
-addSignal -h 15 -holdScope div_rem[31:0]
-addSignal -h 15 -UNSIGNED -HEX /cpu_top_tb/cpu_top_u/core_top_u/exu_u/muldiv_u/op_out[31:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope op_out[31:0]
 addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/acu_u/pipe_stall
 addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/exu_u/alu_mul_ready
 addSignal -h 15 -holdScope iex2ac_hazard
+addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/csr_u/cycle_rd_en
+addSignal -h 15 -UNSIGNED -HEX -holdScope rdata_cycle[31:0]
 addGroup "G6" -e FALSE
 addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/lsu_u/clk
 addSignal -h 15 -holdScope lsu2wb_pc[31:0]
@@ -246,10 +236,10 @@ addSignal -h 15 -holdScope dmem_req.req_mask[3:0]
 addSignal -h 15 -holdScope dmem_req.req_data[31:0]
 addSignal -h 15 -holdScope lsu2ac_hazard
 addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/wbu_u/wb2ac_hazard
-addSignal -h 15 /cpu_top_tb/cpu_top_u/rom_u/ff_wr_en
-addSignal -h 15 -UNSIGNED -UDEC -holdScope ff_addr[14:0]
+addSignal -h 15 /cpu_top_tb/cpu_top_u/ram_u/ff_taken
+addSignal -h 15 -holdScope ff_addr[14:0]
+addSignal -h 15 -holdScope ff_wdata[31:0]
 addSignal -h 15 -holdScope ff_wmask[3:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope ff_wdata[31:0]
 addGroup "G18"
 addSignal -h 15 -UNSIGNED -ASC /cpu_top_tb/cpu_top_u/core_top_u/wbu_u/reg_wb_inst_index[63:0]
 addSignal -h 15 -holdScope reg_wb_pc[31:0]
@@ -264,7 +254,7 @@ addSignal -h 15 -holdScope ac2wb_stall
 addSignal -h 15 -holdScope dbuf_stall
 addGroup "G14" -e FALSE
 addSignal -h 15 /cpu_top_tb/print_valid
-addGroup "G17" -e FALSE
+addGroup "G17"
 addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/gpr_u/x0_zero[31:0]
 addSignal -h 15 -holdScope x1_ra[31:0]
 addSignal -h 15 -holdScope x2_sp[31:0]

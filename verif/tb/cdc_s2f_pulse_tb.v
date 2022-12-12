@@ -1,7 +1,7 @@
 `timescale 1 ns / 1 ps
 
 
-module dmux_tb;
+module cdc_s2f_pulse_tb;
 
 reg            clock;
 reg            rstn_d;
@@ -32,8 +32,8 @@ end
 
 
     initial begin
-    $fsdbDumpfile("dmux_tb.fsdb");
-    $fsdbDumpvars(0, dmux_tb, "+all");
+    $fsdbDumpfile("cdc_s2f_pulse_tb.fsdb");
+    $fsdbDumpvars(0, cdc_s2f_pulse_tb, "+all");
     end
 
 initial begin
@@ -73,16 +73,16 @@ end
 wire mem_valid_q;  // strobe/request
 wire [31:0] mem_data_q;  // strobe/request
 
-async_dmux async_dmux_u(
-    .clk_d(clock),
-    .rstn_d(rstn_d),
-    .val_d(mem_valid),
-    .d(mem_data),
+cdc_s2f_pulse cdc_s2f_pulse_u(
+    .src_clk(clock),
+    .src_rstn(rstn_d),
+    .src_en(mem_valid),
+    .src_in(mem_data),
 
-    .clk_q(clock_slow),
-    .rstn_q(rstn_q),
-    .val_q(mem_valid_q),
-    .q(mem_data_q)
+    .dest_clk(clock_slow),
+    .dest_rstn(rstn_q),
+    .dest_en(mem_valid_q),
+    .dest_out(mem_data_q)
 );
 
 task mem_write;

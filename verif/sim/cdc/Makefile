@@ -29,7 +29,7 @@ vcs		:
 		+define+SIM_PERIOD=15.625 \
 		+incdir+${INC_DIR} \
 		-F flist.f \
-		-top dmux_tb \
+		-top cdc_s2f_pulse_tb \
 		-sverilog \
 		-v2k_generate \
 		-kdb \
@@ -37,7 +37,7 @@ vcs		:
 		+backdoor_load_image=$(IMAGE_PATH) \
 		| tee vcs_$(TB).log
 verdi 	:
-		Verdi -SX -sv -F flist.f -ssf dmux_tb.fsdb -top dmux_tb -sswr signal.rc &
+		Verdi -SX -sv -F flist.f -ssf cdc_s2f_pulse.fsdb -top cdc_s2f_pulse_tb -sswr signal.rc &
 
 dhrystone: 
 	cd ../../../firmware/dhrystone/ && make

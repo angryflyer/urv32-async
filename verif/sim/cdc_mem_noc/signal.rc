@@ -1,0 +1,67 @@
+Magic 271485
+Revision Verdi_Q-2020.03-SP2
+
+; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
+viewPort 0 25 1920 394 153 65
+
+; File list:
+; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
+openDirFile -d / "" "/work/home/zhaowei/work/software/urv32_aync/verif/sim/cdc_mem_noc/cdc_mem_noc_tb.fsdb"
+
+; file time scale:
+; fileTimeScale ### s|ms|us|ns|ps
+
+; signal spacing:
+signalSpacing 5
+
+; windowTimeUnit is used for zoom, cursor & marker
+; waveform viewport range
+zoom 0.000000 349460.000000
+cursor 256000.000000
+marker 0.000000
+
+; user define markers
+; userMarker time_pos marker_name color linestyle
+; visible top row signal index
+top 1
+; marker line index
+markerPos 13
+
+; event list
+; addEvent event_name event_expression
+; curEvent event_name
+
+
+
+COMPLEX_EVENT_BEGIN
+
+
+COMPLEX_EVENT_END
+
+
+
+; toolbar current search type
+; curSTATUS search_type
+curSTATUS ByChange
+
+
+addGroup "G1"
+activeDirFile "" "/work/home/zhaowei/work/software/urv32_aync/verif/sim/cdc_mem_noc/cdc_mem_noc_tb.fsdb"
+addSignal -h 15 /cdc_mem_noc_tb/cdc_mem_noc_u/src_clk
+addSignal -h 15 -holdScope src_req_valid
+addSignal -h 15 -holdScope src_req_ready
+addSignal -h 15 -holdScope src_req
+addGroup "G2"
+addSignal -h 15 /cdc_mem_noc_tb/cdc_mem_noc_u/dest_clk
+addSignal -h 15 -holdScope dest_req_valid
+addSignal -h 15 -holdScope dest_req_ready
+addSignal -h 15 -holdScope dest_req
+addGroup "G3"
+addSignal -h 15 /cdc_mem_noc_tb/mem_req_valid
+addSignal -h 15 -holdScope mem_req.req_addr[31:0]
+addSignal -h 15 -holdScope mem_req_ready
+addGroup "G4"
+
+; getSignalForm Scope Hierarchy Status
+; active file of getSignalForm
+

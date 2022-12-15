@@ -2,7 +2,7 @@ Magic 271485
 Revision Verdi_Q-2020.03-SP2
 
 ; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
-viewPort 0 25 1920 617 215 139
+viewPort 0 25 1920 584 215 139
 
 ; File list:
 ; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
@@ -16,16 +16,16 @@ signalSpacing 5
 
 ; windowTimeUnit is used for zoom, cursor & marker
 ; waveform viewport range
-zoom 1253795.008377 1510682.715430
-cursor 1392000.000000
+zoom 1043739.742670 5084416.407275
+cursor 4208000.000000
 marker 0.000000
 
 ; user define markers
 ; userMarker time_pos marker_name color linestyle
 ; visible top row signal index
-top 140
+top 232
 ; marker line index
-markerPos 163
+markerPos 259
 
 ; Run Time Signal and Member
 ; userBusMem member ...
@@ -82,7 +82,7 @@ COMPLEX_EVENT_END
 curSTATUS ByValue
 
 
-addGroup "G1"
+addGroup "G1" -e FALSE
 activeDirFile "" "/work/home/zhaowei/work/software/urv32_aync/verif/sim/cpu/cpu_top_tb.fsdb"
 addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/ifu_u/clk
 addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/iex2ac_jump_valid
@@ -97,7 +97,7 @@ addSignal -h 15 -holdScope if_inst[31:0]
 addSignal -h 15 -holdScope if_pc[31:0]
 addSignal -h 15 -holdScope if_pc_plus[31:0]
 addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/acu_u/pipe_stall
-addGroup "G2"
+addGroup "G2" -e FALSE
 addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/idu_u/id2iex_valid
 addSignal -h 15 -holdScope reg_id_valid
 addSignal -h 15 -holdScope id2iex_pc[31:0]
@@ -112,7 +112,7 @@ addSignal -h 15 -holdScope imem_resp_valid_mux
 addSignal -h 15 -holdScope ac2id_flush
 addSignal -h 15 -holdScope id2ac_hazard
 addSignal -h 15 -holdScope ac2id_stall
-addGroup "G3"
+addGroup "G3" -e FALSE
 addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/exu_u/iex2lsu_valid
 addSignal -h 15 -holdScope iex2lsu_pc[31:0]
 addSignal -h 15 -holdScope iex2lsu_inst[31:0]
@@ -128,12 +128,15 @@ addSignal -h 15 -holdScope id2iex_rd1[31:0]
 addSignal -h 15 -holdScope iex_rd2_src[31:0]
 addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/acu_u/lsu2ac_hazard
 addSignal -h 15 -holdScope ac2iex_stall
-addGroup "G4"
+addGroup "G4" -e FALSE
 addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/exu_u/muldiv_u/clk
 addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/exu_u/reg_iex_valid
 addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/exu_u/muldiv_u/op_valid
-addSignal -h 15 -holdScope op_ready
-addSignal -h 15 -UNSIGNED -HEX -holdScope op_out[31:0]
+addSignal -h 15 -UNSIGNED -UDEC /cpu_top_tb/cpu_top_u/core_top_u/exu_u/muldiv_u/div_u/DIV_OPT_2/count_q[5:0]
+addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/exu_u/muldiv_u/op_ready
+addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/exu_u/muldiv_u/div_u/DIV_OPT_2/op1_q[63:0]
+addSignal -h 15 -holdScope op2_q[31:0]
+addSignal -h 15 -UNSIGNED -HEX /cpu_top_tb/cpu_top_u/core_top_u/exu_u/muldiv_u/op_out[31:0]
 addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/acu_u/pipe_stall
 addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/exu_u/alu_mul_ready
 addSignal -h 15 -holdScope iex2ac_hazard
@@ -222,25 +225,21 @@ addSignal -h 15 -UNSIGNED -UDEC -holdScope ff_out_1[31:0]
 addSignal -h 15 -holdScope time_irq
 addSignal -h 15 -UNSIGNED -UDEC -holdScope mtime_count_q[63:0]
 addSignal -h 15 -UNSIGNED -UDEC -holdScope mtime_cmp_count_q[63:0]
-addGroup "G13"
+addGroup "G13" -e FALSE
 addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/idu_u/clk
 addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/lsu_u/lsu2wb_valid
 addSignal -h 15 -holdScope lsu2wb_pc[31:0]
 addSignal -h 15 -UNSIGNED -ASC -holdScope lsu2wb_inst_ascii[63:0]
 addSignal -h 15 -holdScope dmem_req_valid
 addSignal -h 15 -holdScope dmem_req_ready
-addSignal -expanded -h 15 -holdScope dmem_req
-addSignal -h 15 -holdScope dmem_req.req_type
-addSignal -h 15 -holdScope dmem_req.req_addr[31:0]
-addSignal -h 15 -holdScope dmem_req.req_mask[3:0]
-addSignal -h 15 -holdScope dmem_req.req_data[31:0]
+addSignal -h 15 -holdScope dmem_req
 addSignal -h 15 -holdScope lsu2ac_hazard
 addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/wbu_u/wb2ac_hazard
 addSignal -h 15 /cpu_top_tb/cpu_top_u/ram_u/ff_taken
 addSignal -h 15 -holdScope ff_addr[14:0]
 addSignal -h 15 -holdScope ff_wdata[31:0]
 addSignal -h 15 -holdScope ff_wmask[3:0]
-addGroup "G18"
+addGroup "G18" -e FALSE
 addSignal -h 15 -UNSIGNED -ASC /cpu_top_tb/cpu_top_u/core_top_u/wbu_u/reg_wb_inst_index[63:0]
 addSignal -h 15 -holdScope reg_wb_pc[31:0]
 addSignal -h 15 -holdScope reg_wb_valid
@@ -254,7 +253,7 @@ addSignal -h 15 -holdScope ac2wb_stall
 addSignal -h 15 -holdScope dbuf_stall
 addGroup "G14" -e FALSE
 addSignal -h 15 /cpu_top_tb/print_valid
-addGroup "G17"
+addGroup "G17" -e FALSE
 addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/gpr_u/x0_zero[31:0]
 addSignal -h 15 -holdScope x1_ra[31:0]
 addSignal -h 15 -holdScope x2_sp[31:0]
@@ -265,7 +264,7 @@ addSignal -h 15 -holdScope x6_t1[31:0]
 addSignal -h 15 -holdScope x7_t2[31:0]
 addSignal -h 15 -holdScope x8_s0_fp[31:0]
 addSignal -h 15 -holdScope x9_s1[31:0]
-addSignal -h 15 -holdScope x10_a0[31:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope x10_a0[31:0]
 addSignal -h 15 -holdScope x11_a1[31:0]
 addSignal -h 15 -holdScope x12_a2[31:0]
 addSignal -h 15 -holdScope x13_a3[31:0]
@@ -302,7 +301,50 @@ addSignal -h 15 -holdScope mn_resp_valid
 addSignal -h 15 -holdScope mn_resp
 addSignal -h 15 /cpu_top_tb/cpu_top_u/clint_u/mem_resp_valid
 addGroup "G21" -e FALSE
-addGroup "G22"
+addSignal -h 15 /cpu_top_tb/cpu_top_u/rom_u/mem_req_valid
+addSignal -h 15 -holdScope mem_req_ready
+addSignal -h 15 -holdScope mem_req
+addGroup "G22" -e FALSE
+addSignal -h 15 /cpu_top_tb/cpu_top_u/rom_u/mem_resp_valid
+addSignal -h 15 -holdScope mem_resp_ready
+addSignal -h 15 -holdScope mem_resp
+addGroup "G23"
+addSignal -h 15 /cpu_top_tb/cpu_top_u/cdc_mem_noc_u/src_clk
+addSignal -h 15 -holdScope src_req_valid
+addSignal -h 15 -holdScope src_req_ready
+addSignal -h 15 -holdScope src_req
+addSignal -h 15 -holdScope src_resp_valid
+addSignal -h 15 -holdScope src_resp_ready
+addSignal -h 15 -holdScope src_resp
+addGroup "G24"
+addSignal -h 15 /cpu_top_tb/cpu_top_u/cdc_mem_noc_u/dest_clk
+addSignal -h 15 -holdScope dest_req_valid
+addSignal -h 15 -holdScope dest_req_ready
+addSignal -h 15 -holdScope dest_req
+addSignal -h 15 -holdScope dest_resp_valid
+addSignal -h 15 -holdScope dest_resp_ready
+addSignal -h 15 -holdScope dest_resp
+addGroup "G27" -e FALSE
+addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/imem_req_valid
+addSignal -h 15 -holdScope imem_req_ready
+addSignal -h 15 -holdScope imem_req
+addSignal -h 15 -holdScope imem_resp_valid
+addSignal -h 15 -holdScope imem_resp_ready
+addSignal -h 15 -holdScope imem_resp
+addGroup "G28"
+addGroup "G25"
+addGroup "G29"
+addSignal -h 15 /cpu_top_tb/cpu_top_u/ram_u/clk
+addSignal -h 15 /cpu_top_tb/cpu_top_u/core_top_u/dmem_req_valid
+addSignal -h 15 -holdScope dmem_req_ready
+addSignal -h 15 -holdScope dmem_req
+addSignal -h 15 -holdScope dmem_resp_valid
+addSignal -h 15 -holdScope dmem_resp_ready
+addSignal -h 15 -holdScope dmem_resp
+addGroup "G30"
+addGroup "G31"
+addGroup "G32"
+addGroup "G33"
 
 ; getSignalForm Scope Hierarchy Status
 ; active file of getSignalForm

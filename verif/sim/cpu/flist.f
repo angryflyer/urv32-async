@@ -3,6 +3,7 @@
 ../../../rtl/com/component.v
 ../../../rtl/com/inst_index.v
 ../../../rtl/com/macro.v
+../../../rtl/com/async_fifo.sv
 ../../../rtl/core/reg.v
 ../../../rtl/core/acu.v
 ../../../rtl/core/pc.v
@@ -27,6 +28,7 @@
 ../../../rtl/noc/mem_noc_router_1to4.sv
 ../../../rtl/noc/mem_noc_arb_2to1.sv
 ../../../rtl/noc/mem_noc.sv
+../../../rtl/noc/cdc_mem_noc.sv
 ../../../rtl/peri/clint/clint.sv
 ../../../rtl/peri/plic/plic.sv
 ../../../rtl/peri/testio/testio_trx.sv

@@ -42,35 +42,56 @@ addi x29, zero, 0
 addi x30, zero, 0
 addi x31, zero, 0
 
-# div
-li a0, -15
-li a1, -2
-li a3, 0x5a
-li a4, 0x20000
-sw a3, 0(a4)
-lw a4, 0(a4)
-div a3, a0, a1
-rem a3, a0, a1
+# # div
+# li a0, -15
+# li a1, -2
+# li a3, 0x5a
+# li a4, 0x20000
+# sw a3, 0(a4)
+# lw a4, 0(a4)
+# div a3, a0, a1
+# rem a3, a0, a1
 
-li a0, 32
-li a1, 10
-li a3, 0x0
-li a4, 0x20000
-lw a4, 0(a4)
-div a3, a0, a1
-rem a3, a0, a1
+# li a0, 32
+# li a1, 10
+# li a3, 0x0
+# li a4, 0x20000
+# lw a4, 0(a4)
+# div a3, a0, a1
+# rem a3, a0, a1
 
-# mul
-li a0, 0xffffffff
-li a1, 0xffffffff
-li a3, 0x0
-# sw a0, 0(a3)
-# lw a1, 0(a3)
-mul a2, a0, a1
-mulh a2, a0, a1
-mulhsu a2, a0, a1
-mulhu a2, a0, a1
+# # mul
+# li a0, 0xffffffff
+# li a1, 0xffffffff
+# li a3, 0x0
+# # sw a0, 0(a3)
+# # lw a1, 0(a3)
 # mul a2, a0, a1
+# mulh a2, a0, a1
+# mulhsu a2, a0, a1
+# mulhu a2, a0, a1
+# # mul a2, a0, a1
+
+li a0, 0x0
+li a1, 0x1
+li a2, 0x2
+li a3, 0x3
+li a4, 0x4
+li a5, 0x5
+li a6, 0x20000
+sw a0, 0(a6)
+sw a1, 4(a6)
+sw a2, 8(a6)
+sw a3, 12(a6)
+sw a4, 16(a6)
+sw a5, 20(a6)
+
+lw a0, 0(a6)
+lw a1, 4(a6)
+lw a2, 8(a6)
+lw a3, 12(a6)
+lw a4, 16(a6)
+lw a5, 20(a6)
 
 init_stack:
     /* set stack pointer */

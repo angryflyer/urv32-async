@@ -53,9 +53,11 @@ module cdc_mem_noc
     logic dest_req_ready_full;
     logic dest_req_ready_afull;
 
-    // assign src_req_wr_en   = src_req_valid && src_req_ready && ~src_req_full; 
+    logic is_src_req_write;
+    logic is_src_req_read;
+
     assign src_req_wr_en   = src_req_valid && src_req_ready && ~src_req_full;   
-    // assign src_req_wr_en   = src_req_valid && ~src_req_full && ~src_req_afull;
+
     assign src_req_wr_data = src_req;
 
     assign dest_req_rd_en  = dest_req_valid && dest_req_ready;
@@ -66,7 +68,10 @@ module cdc_mem_noc
     assign dest_req_ready_wr_data = dest_req_ready;
 
     assign src_req_ready_rd_en    = ~src_req_ready_empty;
-    assign src_req_ready          = src_req_ready_rd_en && src_req_ready_rd_data;        
+    assign is_src_req_write       = src_req_valid && (src_req.req_type == MEM_WRITE);
+    assign is_src_req_read        = src_req_valid && (src_req.req_type == MEM_READ);
+    // assign src_req_ready          = is_src_req_write ? src_req_wr_en : (is_src_req_read && src_req_ready_rd_en && src_req_ready_rd_data);
+    assign src_req_ready          = src_req_ready_rd_en && src_req_ready_rd_data;          
 
     async_fifo #(
         .W         (MEM_REQ_T_W),
@@ -135,7 +140,7 @@ module cdc_mem_noc
     logic src_resp_ready_full;
     logic src_resp_ready_afull;
 
-    assign dest_resp_wr_en   = dest_resp_valid && dest_resp_ready && ~dest_resp_full;   
+    assign dest_resp_wr_en   = dest_resp_valid && ~dest_resp_full;   
 
     assign dest_resp_wr_data = dest_resp;
 

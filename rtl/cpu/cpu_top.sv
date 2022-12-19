@@ -329,19 +329,19 @@ mem_noc mem_noc_u (
 // 		.q(ram_rdata)		
 // 	);
 // `else
-    // ram #(
-    // 	.WORDS(RAM_SIZE)
-    // ) ram_u (
-    //     .clk(clk),
-    //     .rstn(rstn),
-    //     .mem_req_valid(ram_req_valid),
-    //     .mem_req_ready(ram_req_ready),
-    //     .mem_req(ram_req),
+    ram #(
+        .WORDS(RAM_SIZE)
+    ) ram_u (
+        .clk(clk),
+        .rstn(rstn),
+        .mem_req_valid(ram_req_valid),
+        .mem_req_ready(ram_req_ready),
+        .mem_req(ram_req),
 
-    //     .mem_resp_valid(ram_resp_valid),
-    //     .mem_resp_ready(ram_resp_ready),
-    //     .mem_resp(ram_resp)	
-    // );
+        .mem_resp_valid(ram_resp_valid),
+        .mem_resp_ready(ram_resp_ready),
+        .mem_resp(ram_resp)	
+    );
 // `endif
 
 // boot_ram #(
@@ -357,47 +357,47 @@ mem_noc mem_noc_u (
 //     .rstn                         ( rstn           ) 
 // );
 
-logic            cdc_mem_req_valid;  // strobe/request
-logic            cdc_mem_req_ready;
-mem_req_t        cdc_mem_req;  // strobe/request
+// logic            cdc_mem_req_valid;  // strobe/request
+// logic            cdc_mem_req_ready;
+// mem_req_t        cdc_mem_req;  // strobe/request
 
-logic            cdc_mem_resp_valid;  // strobe/request
-logic            cdc_mem_resp_ready;
-mem_resp_t       cdc_mem_resp;  // strobe/request
+// logic            cdc_mem_resp_valid;  // strobe/request
+// logic            cdc_mem_resp_ready;
+// mem_resp_t       cdc_mem_resp;  // strobe/request
 
-cdc_mem_noc cdc_mem_noc_u (
-    .src_clk(clk),
-    .src_rstn(rstn),
-    .src_req_valid(ram_req_valid),
-    .src_req_ready(ram_req_ready),
-    .src_req(ram_req),
-    .src_resp_valid(ram_resp_valid),
-    .src_resp_ready(ram_resp_ready),
-    .src_resp(ram_resp),
+// cdc_mem_noc cdc_mem_noc_u (
+//     .src_clk(clk),
+//     .src_rstn(rstn),
+//     .src_req_valid(ram_req_valid),
+//     .src_req_ready(ram_req_ready),
+//     .src_req(ram_req),
+//     .src_resp_valid(ram_resp_valid),
+//     .src_resp_ready(ram_resp_ready),
+//     .src_resp(ram_resp),
 
-    .dest_clk(clk),
-    .dest_rstn(rstn),
-    .dest_req_valid(cdc_mem_req_valid),
-    .dest_req_ready(cdc_mem_req_ready),
-    .dest_req(cdc_mem_req),
-    .dest_resp_valid(cdc_mem_resp_valid),
-    .dest_resp_ready(cdc_mem_resp_ready),
-    .dest_resp(cdc_mem_resp)
-);
+//     .dest_clk(clk),
+//     .dest_rstn(rstn),
+//     .dest_req_valid(cdc_mem_req_valid),
+//     .dest_req_ready(cdc_mem_req_ready),
+//     .dest_req(cdc_mem_req),
+//     .dest_resp_valid(cdc_mem_resp_valid),
+//     .dest_resp_ready(cdc_mem_resp_ready),
+//     .dest_resp(cdc_mem_resp)
+// );
 
-ram #(
-	.WORDS(RAM_SIZE)
-) ram_u (
-	.clk(clk),
-    .rstn(rstn),
-    .mem_req_valid(cdc_mem_req_valid),
-    .mem_req_ready(cdc_mem_req_ready),
-    .mem_req(cdc_mem_req),
+// ram #(
+// 	.WORDS(RAM_SIZE)
+// ) ram_u (
+// 	.clk(clk),
+//     .rstn(rstn),
+//     .mem_req_valid(cdc_mem_req_valid),
+//     .mem_req_ready(cdc_mem_req_ready),
+//     .mem_req(cdc_mem_req),
 
-    .mem_resp_valid(cdc_mem_resp_valid),
-    .mem_resp_ready(cdc_mem_resp_ready),
-    .mem_resp(cdc_mem_resp)
-);
+//     .mem_resp_valid(cdc_mem_resp_valid),
+//     .mem_resp_ready(cdc_mem_resp_ready),
+//     .mem_resp(cdc_mem_resp)
+// );
 
 //rom
 rom #(

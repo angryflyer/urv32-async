@@ -43,6 +43,13 @@ module ram
         .q(mem_resp_valid) 
     );
 
+    stdffr #($bits(mem_req.req_type)) ff_type_u (
+        .clk(clk),
+        .rstn(rstn),
+        .d(mem_req.req_type),
+        .q(mem_resp.resp_type) 
+    );
+
 	always @(posedge clk) begin
 		ff_rdata <= mem[ff_addr];
 		if (ff_wmask[0]) mem[ff_addr][ 7: 0] <= ff_wdata[ 7: 0];

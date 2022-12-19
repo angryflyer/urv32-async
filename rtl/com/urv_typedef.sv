@@ -19,6 +19,7 @@ typedef struct packed {
 } mem_req_t;
 
 typedef struct packed {
+    mem_req_type_t               resp_type;
     logic [MEM_DATA_W-1:0]       resp_data;
 } mem_resp_t;
 

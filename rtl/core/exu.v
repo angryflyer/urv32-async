@@ -347,9 +347,13 @@ module exu (
 	wire [31:0] iex_pc_plus_imm;
 	wire bp_jump_valid;
     wire branch_valid;
+    wire bp_jal_valid;
+    wire jal_valid;
 	assign bp_jump_valid = reg_iex_branch && ((~alu_comp_out && reg_iex_bp_taken) || (alu_comp_out && ~reg_iex_bp_taken));
-	assign branch_valid = reg_iex_branch && alu_comp_out;
-	assign pc_src1      = bp_jump_valid | reg_iex_jal_jalr;
+    assign jal_valid     = reg_iex_jal_jalr && ~reg_iex_pc_src0;
+    assign bp_jal_valid  = jal_valid && ~reg_iex_bp_taken;
+	assign branch_valid  = reg_iex_branch && alu_comp_out;
+	assign pc_src1       = bp_jump_valid | reg_iex_pc_src0 | bp_jal_valid;
 
 	adder adder_pc_plus_imm_u (
 		.in0(reg_iex_pc),
@@ -378,15 +382,16 @@ module exu (
 
 	wire [31:0] iex_jalr_pc;
 	assign iex_jalr_pc    = {alu_out[31:1], 1'b0};
-	assign iex_jump_pc    = reg_iex_pc_src0  ? iex_jalr_pc 
-						  : reg_iex_bp_taken ? reg_iex_pc_plus
-						  : iex_pc_plus_imm;
+    assign iex_jump_pc    = reg_iex_pc_src0  ? iex_jalr_pc 
+                          : reg_iex_bp_taken ? reg_iex_pc_plus
+                          : iex_pc_plus_imm;
+
 	assign iex_jump_valid = reg_iex_valid && pc_src1 && (!ac2iex_flush);
 
 	// iex to bpu
-	assign flush_valid    = reg_iex_branch;
+	assign flush_valid    = reg_iex_branch | jal_valid;
 	assign flush_new_pc   = ~reg_iex_bp_match;  // not match, so need add pc to bpu
-	assign flush_type     = branch_valid; // 1'b0 -> njump, 1'b1 -> jump 
+	assign flush_type     = branch_valid | jal_valid; // 1'b0 -> njump, 1'b1 -> jump 
 	assign flush_addr     = reg_iex_bp_addr;
 	assign flush_bp_pc    = reg_iex_pc[`BP_ADDR_BITS-1:0];
 	assign flush_pc       = iex_pc_plus_imm;	

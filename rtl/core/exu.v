@@ -111,7 +111,7 @@ module exu (
     // exu <-> bpu
     output  flush_valid,
     output  flush_new_pc,
-    output  flush_type,        //0->miss, 1->hit
+    output  [3:0] flush_type,        //0->miss, 1->hit
     output  [`BP_ADDR_W-1:0]  flush_addr, //record 32 branch instruction pc
     output  [31:0] flush_bp_pc,
     output  [31:0] flush_pc,
@@ -391,7 +391,7 @@ module exu (
 	// iex to bpu
 	assign flush_valid    = reg_iex_branch | jal_valid;
 	assign flush_new_pc   = ~reg_iex_bp_match;  // not match, so need add pc to bpu
-	assign flush_type     = branch_valid | jal_valid; // 1'b0 -> njump, 1'b1 -> jump 
+	assign flush_type     = {jal_valid, reg_iex_pc_src0, (branch_valid | jal_valid)}; // 1'b0 -> njump, 1'b1 -> jump 
 	assign flush_addr     = reg_iex_bp_addr;
 	assign flush_bp_pc    = reg_iex_pc[`BP_ADDR_BITS-1:0];
 	assign flush_pc       = iex_pc_plus_imm;	

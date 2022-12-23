@@ -172,7 +172,7 @@ wire [31:0] bp_resp_pc;
 // exu <-> bpu
 wire flush_valid;
 wire flush_new_pc;
-wire flush_type;       //0->miss, 1->hit
+wire [2:0] flush_type;       //0->miss, 1->hit
 wire [`BP_ADDR_W-1:0]  flush_addr; //record 6 kinds of branch instruction
 wire [`BP_ADDR_BITS-1:0] flush_bp_pc;
 wire [31:0] flush_pc;

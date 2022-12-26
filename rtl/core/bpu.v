@@ -184,8 +184,8 @@ always @(posedge clk or negedge rstn) begin
 end
 // state switch
 assign state = state_mem[state_addr];
-assign next_state = ((state == STRG_NTAKEN) && ~is_branch) ? STRG_NTAKEN
-                  : (((state == STRG_TAKEN) &&  is_branch) | is_jal_jalr) ? STRG_TAKEN
+assign next_state = (((state == STRG_TAKEN) &&  is_branch) | is_jal_jalr) ? STRG_TAKEN
+                  : ((state == STRG_NTAKEN) && ~is_branch) ? STRG_NTAKEN
                   : state + (is_branch ? 2'b01 : 2'b11); // +1 -> 2'b01, -1 -> 2'b11 
 
 // bp req

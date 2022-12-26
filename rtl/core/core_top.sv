@@ -172,14 +172,19 @@ wire [31:0] bp_resp_pc;
 // exu <-> bpu
 wire flush_valid;
 wire flush_new_pc;
-wire [2:0] flush_type;       //0->miss, 1->hit
+wire [3:0] flush_type;       //0->miss, 1->hit
 wire [`BP_ADDR_W-1:0]  flush_addr; //record 6 kinds of branch instruction
 wire [`BP_ADDR_BITS-1:0] flush_bp_pc;
 wire [31:0] flush_pc;
+wire flush_ras_valid; // pop or push valid: rs1 or rd = x1 or x5;
+wire [1:0]  flush_ras_type;  // action: 2'b00 > push, 2'b01 > pop, 2'b10 -> pop then push;
+wire [31:0] flush_ras_pc;    // push ras pc
 
 wire if2id_bp_taken;
 wire if2id_bp_match;
 wire [`BP_ADDR_W-1:0] if2id_bp_addr;
+wire [31:0] if2id_bp_pc;
+wire [31:0] id2iex_bp_pc;
 
 wire id2iex_bp_taken;
 wire id2iex_bp_match;
@@ -250,7 +255,10 @@ bpu bpu_u(
     .flush_type(flush_type),        //0->miss, 1->hit
     .flush_addr(flush_addr), //record 6 kinds of branch instruction
     .flush_bp_pc(flush_bp_pc),
-    .flush_pc(flush_pc)	
+    .flush_pc(flush_pc),
+    .flush_ras_valid(flush_ras_valid), // pop or push valid: rs1 or rd = x1 or x5;
+    .flush_ras_type(flush_ras_type),  // action: 2'b00 > push, 2'b01 > pop, 2'b10 -> pop then push;
+    .flush_ras_pc(flush_ras_pc)    // push ras pc	
 );
 
 csr csr_u(
@@ -425,6 +433,7 @@ exu exu_u(
     .id2iex_bp_taken(id2iex_bp_taken),
     .id2iex_bp_match(id2iex_bp_match),
     .id2iex_bp_addr(id2iex_bp_addr),
+    .id2iex_bp_pc(id2iex_bp_pc),
 
     `ifndef SYNTHESIS
     .id2iex_inst_ascii(id2iex_inst_ascii), 
@@ -516,6 +525,9 @@ exu exu_u(
     .flush_addr(flush_addr), //record 6 kinds of branch instruction
     .flush_bp_pc(flush_bp_pc),
     .flush_pc(flush_pc),
+    .flush_ras_valid(flush_ras_valid), // pop or push valid: rs1 or rd = x1 or x5;
+    .flush_ras_type(flush_ras_type),  // action: 2'b00 > push, 2'b01 > pop, 2'b10 -> pop then push;
+    .flush_ras_pc(flush_ras_pc),    // push ras pc
 
     .iex2ac_hazard(iex2ac_hazard)
 );
@@ -536,6 +548,7 @@ idu idu_u(
     .if2id_bp_taken(if2id_bp_taken),
     .if2id_bp_match(if2id_bp_match),
     .if2id_bp_addr(if2id_bp_addr),
+    .if2id_bp_pc(if2id_bp_pc),
 
     .rf2id_rd1(rf2id_rd1),
     .rf2id_rd2(rf2id_rd2),
@@ -566,6 +579,7 @@ idu idu_u(
     .id2iex_bp_taken(id2iex_bp_taken),
     .id2iex_bp_match(id2iex_bp_match),
     .id2iex_bp_addr(id2iex_bp_addr),
+    .id2iex_bp_pc(id2iex_bp_pc),
 
     `ifndef SYNTHESIS
     .id2iex_inst_ascii(id2iex_inst_ascii),
@@ -630,6 +644,7 @@ ifu ifu_u(
     .if2id_bp_taken(if2id_bp_taken),
     .if2id_bp_match(if2id_bp_match),
     .if2id_bp_addr(if2id_bp_addr),
+    .if2id_bp_pc(if2id_bp_pc),
 
     //output
     .if_valid(if2id_valid),

@@ -34,6 +34,7 @@ module ifu
     output if2id_bp_taken,
     output if2id_bp_match,
     output [`BP_ADDR_W-1:0] if2id_bp_addr,
+    output [31:0] if2id_bp_pc,
 
     // ifu to idu 
     output if_valid,
@@ -80,6 +81,7 @@ module ifu
     assign if2id_bp_taken = bp_resp_valid;
     assign if2id_bp_match = bp_resp_match;
     assign if2id_bp_addr  = bp_resp_addr;
+    assign if2id_bp_pc    = bp_resp_pc;
 
 `ifdef BPU_FUNC0
     assign bp_pc        = bp_resp_pc;

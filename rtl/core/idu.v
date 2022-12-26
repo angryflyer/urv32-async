@@ -23,6 +23,7 @@ module idu
     input         if2id_bp_taken,
     input         if2id_bp_match,
     input [`BP_ADDR_W-1:0]   if2id_bp_addr,
+    output [31:0] if2id_bp_pc,
 
     //from rf to id
     input [31:0]  rf2id_rd1,
@@ -63,6 +64,7 @@ module idu
     output        id2iex_bp_taken,
     output        id2iex_bp_match,
     output [`BP_ADDR_W-1:0]  id2iex_bp_addr,
+    output [31:0] id2iex_bp_pc,
 
     `ifndef SYNTHESIS
         output [63:0] id2iex_inst_ascii, 
@@ -170,6 +172,7 @@ module idu
 	reg reg_id_bp_taken;
 	reg reg_id_bp_match;
 	reg [`BP_ADDR_W-1:0] reg_id_bp_addr;
+    reg [31:0] reg_id_bp_pc;
 	always @(posedge clk or negedge rstn) begin
 		if(!rstn) begin
 			reg_id_valid   <= `DEASSERT;
@@ -178,7 +181,8 @@ module idu
 			// reg_id_inst    <= `WORD_DEASSERT;	
 			reg_id_bp_taken<= `DEASSERT;
 			reg_id_bp_match<= `DEASSERT;
-			reg_id_bp_addr <= `WORD_DEASSERT;		
+			reg_id_bp_addr <= `WORD_DEASSERT;	
+            reg_id_bp_pc   <= `WORD_DEASSERT;	
 		end else if(~ac2id_stall) begin
 			reg_id_valid   <= if2id_valid;
 			reg_id_pc      <= if2id_pc;
@@ -187,6 +191,7 @@ module idu
 			reg_id_bp_taken<= if2id_bp_taken;
 			reg_id_bp_match<= if2id_bp_match;
 			reg_id_bp_addr <= if2id_bp_addr;
+            reg_id_bp_pc   <= if2id_bp_pc;
 		end
 	end
 
@@ -239,6 +244,7 @@ module idu
 	assign id2iex_bp_taken     = reg_id_bp_taken;
 	assign id2iex_bp_match     = reg_id_bp_match;
 	assign id2iex_bp_addr      = reg_id_bp_addr;
+    assign id2iex_bp_pc        = reg_id_bp_pc;
 
 	assign id2csr_ra           = reg_id_inst[31:20];
 	assign id2rf_rs2           = reg_id_inst[24:20];

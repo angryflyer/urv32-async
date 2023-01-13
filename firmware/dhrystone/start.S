@@ -72,26 +72,26 @@ addi x31, zero, 0
 # mulhu a2, a0, a1
 # # mul a2, a0, a1
 
-li a0, 0x0
-li a1, 0x1
-li a2, 0x2
-li a3, 0x3
-li a4, 0x4
-li a5, 0x5
-li a6, 0x20000
-sw a0, 0(a6)
-sw a1, 4(a6)
-sw a2, 8(a6)
-sw a3, 12(a6)
-sw a4, 16(a6)
-sw a5, 20(a6)
+# li a0, 0x0
+# li a1, 0x1
+# li a2, 0x2
+# li a3, 0x3
+# li a4, 0x4
+# li a5, 0x5
+# li a6, 0x20000
+# sw a0, 0(a6)
+# sw a1, 4(a6)
+# sw a2, 8(a6)
+# sw a3, 12(a6)
+# sw a4, 16(a6)
+# sw a5, 20(a6)
 
-lw a0, 0(a6)
-lw a1, 4(a6)
-lw a2, 8(a6)
-lw a3, 12(a6)
-lw a4, 16(a6)
-lw a5, 20(a6)
+# lw a0, 0(a6)
+# lw a1, 4(a6)
+# lw a2, 8(a6)
+# lw a3, 12(a6)
+# lw a4, 16(a6)
+# lw a5, 20(a6)
 
 init_stack:
     /* set stack pointer */

@@ -16,8 +16,9 @@ module cpu_top
     output [31:0] iex2lsu_pc
 );
 
-parameter integer RAM_SIZE = `RAM_WIDTH_IN_BYTE >> 2;
-parameter integer ROM_SIZE = `ROM_WIDTH_IN_BYTE >> 2;
+parameter RAM_SIZE = `RAM_WIDTH_IN_BYTE >> 2;
+parameter ROM_SIZE = `ROM_WIDTH_IN_BYTE >> 2;
+parameter CFG_RST_PC = `RST_PC;
 
 logic imem_req_valid;
 logic imem_req_ready;
@@ -99,7 +100,7 @@ logic [CSR_TIME_W-1:0] time_val;
 core_top core_top_u (
     .clk(clk),
     .rstn(rstn),
-    .rst_pc(`RST_PC),
+    .rst_pc(CFG_RST_PC),
 
     // .ext_irq(ext_irq),
     .ext_irq(1'b0),

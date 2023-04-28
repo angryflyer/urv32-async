@@ -52,15 +52,15 @@ addi x29, zero, 0
 addi x30, zero, 0
 addi x31, zero, 0
 
-# init uart
-li a0, UART_CTRL_ADDR
-li a1, UART_BAUD_ADDR
+# # init uart
+# li a0, UART_CTRL_ADDR
+# li a1, UART_BAUD_ADDR
 
-li t0, 0x43
-li t1, PRINT_BAUT
+# li t0, 0x03
+# li t1, PRINT_BAUT
 
-sw t0, 0(a0)
-sw t1, 0(a1)
+# sw t0, 0(a0)
+# sw t1, 0(a1)
 
 # # div
 # li a0, -15
@@ -170,9 +170,9 @@ sw a3, 3*4(a0)
 sw a3, 4*4(a0)
 
 # init time cmp gap
-li a3, 0x100
+# li a3, 0x100
 # li a3, -1
-# li a3, 0x2FAF080
+li a3, 0x2FAF080
 sw a3, 3*4(a0)
 # sw a3, 4*4(a0)
 
@@ -180,30 +180,24 @@ sw a3, 3*4(a0)
 la t0, early_trap_entry 
 # li t0, 0x0
 csrw mtvec, t0
-# enable mie
-li t1, 0x80
+# enable mtie
+# li t1, 0x80
+# enable meie/mtie/msie
+li t1, 0x888
 li t2, 0x8
 csrw mie, t1
 csrw mstatus, t2
-
-# li a0, 0x51004
-# li a1, 0x51008
-# li a2, 0x51084
-
-# li a3, 0x2
-# sw a3, 0(a0)
-# sw a3, 0(a1)
-# lw t1, 0(a1)
-# li a3, 0xf
-# sw a3, 0(a2)
 
 # enable timer
 li a1, 0x50014
 li a3, 0x1
 sw a3, 0(a1)
 
+# sys init
+call sys_init
+
 # call main
-# call main
+call main
 loop:
 j loop
 
@@ -216,6 +210,7 @@ early_trap_entry:
 	csrr a2, mtval
 	csrr a3, mstatus
 	csrr a4, time
+	csrr a5, timeh
 	jal trap_handle
 #endif
     j early_trap_entry
@@ -265,19 +260,15 @@ early_trap_entry:
 	jal trap_handle
 
     # mtime count reg
-    li a0, 0x50000
-    # mtime cmp reg
+    # li a0, 0x50000
+    # # mtime cmp reg
     # li a2, 0x500
-	li a2, 0x40000000
-	# li a2, -1;
-    lw a3, 1*4(a0)
-    add a3, a3, a2
-    sw a3, 3*4(a0)
-    # sw a2, 4*4(a0)
-
-    # li a0, 0x5108c
-    # lw t1, 0(a0)
-    # sw t1, 0(a0) 
+	# # li a2, 0x40000000
+	# # li a2, -1;
+    # lw a3, 1*4(a0)
+    # add a3, a3, a2
+    # sw a3, 3*4(a0)
+    # # sw a2, 4*4(a0) 
 
 	LOAD x1, 1*REGBYTES(sp)
 	LOAD x2, 2*REGBYTES(sp)

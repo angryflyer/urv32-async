@@ -7,6 +7,28 @@
 
 #include <stdarg.h>
 #include <stdint.h>
+#include "reg_common.h"
+
+#define REGBLK_SUBSYS_UART_ADDR 0x10000000
+//#define REGBLK_SUBSYS_UART_ADDR 0xFF027000
+#define UART_DATA_ADDR  (REGBLK_SUBSYS_UART_ADDR + 0x0)
+#define UART_STATE_ADDR (REGBLK_SUBSYS_UART_ADDR + 0x4)
+#define UART_CTRL_ADDR  (REGBLK_SUBSYS_UART_ADDR + 0x8)
+#define UART_INT_ADDR   (REGBLK_SUBSYS_UART_ADDR + 0xC)
+#define UART_BAUD_ADDR  (REGBLK_SUBSYS_UART_ADDR + 0x10)
+#define UART_PID4_ADDR  (REGBLK_SUBSYS_UART_ADDR + 0xFD0) #0x04
+#define UART_BAUT_COE   (50000000l / 115200)
+
+#define REGBLK_SUBSYS_PLIC_ADDR 0x51000
+#define PLIC_PRI_BASE_ADDR      (REGBLK_SUBSYS_PLIC_ADDR + 0x0)
+#define PLIC_PRI_SRC1           (REGBLK_SUBSYS_PLIC_ADDR + 0x4)
+#define PLIC_PRI_SRC2           (REGBLK_SUBSYS_PLIC_ADDR + 0x8)
+#define PLIC_PRI_SRC31          (REGBLK_SUBSYS_PLIC_ADDR + 0x7c)
+
+#define PLIC_IP                 (REGBLK_SUBSYS_PLIC_ADDR + 0x80)
+#define PLIC_IE                 (REGBLK_SUBSYS_PLIC_ADDR + 0x84)
+#define PLIC_PRI_THRES          (REGBLK_SUBSYS_PLIC_ADDR + 0x88)
+#define PLIC_CLAIM              (REGBLK_SUBSYS_PLIC_ADDR + 0x8c)
 
 #define USE_MYSTDLIB
 
@@ -41,17 +63,66 @@ long insn()
 	return insns;
 }
 
+void plic_init()
+{
+    // plic_init
+	// set plic ip
+	// set plic ie-> enable bit[1] for uart intr
+    write32(PLIC_IE, 0x02);
+	// set plic pri thres
+    write32(PLIC_PRI_THRES, 0x0);
+	// set plic pri src1 and src2
+	write32(PLIC_PRI_SRC1, 0x02);
+	write32(PLIC_PRI_SRC2, 0x02);
+}
+
+void uart_init()
+{
+    // uart init
+	uint8_t uart_test_mode         = 0;
+	uint8_t uart_rx_overrun_int_en = 0;
+	uint8_t uart_tx_overrun_int_en = 0;
+	uint8_t uart_rx_int_en         = 1;
+	uint8_t uart_tx_int_en         = 0;
+	uint8_t uart_rx_en             = 1;
+	uint8_t uart_tx_en             = 1;
+	uint8_t uart_ctrl              = 0;
+
+	// init uart_ctrl
+	uart_ctrl = (uart_test_mode         << 6)
+	          | (uart_rx_overrun_int_en << 5)
+			  | (uart_tx_overrun_int_en << 4)
+	          | (uart_rx_int_en         << 3)
+			  | (uart_tx_int_en         << 2)
+			  | (uart_rx_en             << 1)
+			  | (uart_tx_en             << 0);
+    write32(UART_CTRL_ADDR, uart_ctrl);
+	// set bautrate
+    write32(UART_BAUD_ADDR, UART_BAUT_COE);
+}
+
+void sys_init()
+{
+	plic_init();
+	uart_init();
+}
+
 void trap_handle(uint32_t mepc, uint32_t mcause, uint32_t mtval, uint32_t mtsatus, uint32_t timel, uint32_t timeh)
 {
-	// unsigned long long time_val;
-	// uint32_t timel_val, timeh_val;
+	unsigned long long time_val;
+	unsigned long long timel_val, timeh_val;
 	// printf("Enter trap_handle!\r\n");
 	printf("Enter trap_handle! mepc=%x mcause=%x mtval=%x mtsatus=%x timel=%u timeh=%u\r\n", mepc, mcause, mtval, mtsatus, timel, timeh);
-	// timel_val = *(volatile uint32_t *)0x50004;
-	// timeh_val = *(volatile uint32_t *)0x50008;
-	// time_val  = (timeh_val << 32 | timel_val) + 634338468;
-	// *(volatile uint32_t *)0x5000c = time_val;
-	// *(volatile uint32_t *)0x50010 = time_val >> 32;
+	timel_val = *(volatile uint32_t *)0x50004;
+	timeh_val = *(volatile uint32_t *)0x50008;
+	time_val  = ((timeh_val << 32) | timel_val) + 0x2FAF080;
+	*(volatile uint32_t *)0x5000c = time_val;
+	*(volatile uint32_t *)0x50010 = time_val >> 32;
+
+	// clear uart int
+	write32(UART_INT_ADDR, 0xf);
+	// clear plic id
+    write32(PLIC_CLAIM, read32(PLIC_CLAIM));
 }
 
 #ifdef USE_MYSTDLIB

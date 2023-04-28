@@ -65,8 +65,8 @@ logic mem_req_handshaked;
 logic mem_resp_handshaked;
 
 logic [PLIC_CLAIM_W-1:0] ff_addr;
-logic [MEM_DATA_W-1:0] ff_wdata;;
-logic [MEM_MASK_W-1:0] ff_wmask;;
+logic [MEM_DATA_W-1:0] ff_wdata;
+logic [MEM_MASK_W-1:0] ff_wmask;
 logic [MEM_DATA_W-1:0] ff_bit_mask;
 
 logic [MEM_DATA_W-1:0] ff_out;
@@ -80,7 +80,7 @@ assign ff_taken         = mem_req_handshaked;
 assign ff_wr_en         = mem_req_handshaked && (mem_req.req_type == MEM_WRITE);
 assign ff_rd_en         = mem_req_handshaked && (mem_req.req_type == MEM_READ);
 
-assign mem_req_handshaked = mem_req_valid && mem_req_ready;
+assign mem_req_handshaked = mem_req_valid  && mem_req_ready;
 assign mem_resp_handshaked= mem_resp_valid && mem_resp_ready;
 
 generate

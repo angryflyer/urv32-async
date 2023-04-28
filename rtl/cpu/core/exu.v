@@ -262,11 +262,11 @@ module exu (
     wire [31:0] iex_rd1_src;
     wire [31:0] iex_rd2_src;
     assign iex_rd1_src = lsu2iex_forward_rs1_val ? lsu2wb_dout 
-                    : (wb2iex_forward_rs1_val ? wb2rf_wdata 
-                    : reg_iex_rf_rd1);
+                       : (wb2iex_forward_rs1_val ? wb2rf_wdata 
+                       : reg_iex_rf_rd1);
     assign iex_rd2_src = lsu2iex_forward_rs2_val ? lsu2wb_dout 
-                    : (wb2iex_forward_rs2_val ? wb2rf_wdata 
-                    : reg_iex_rf_rd2);
+                       : (wb2iex_forward_rs2_val ? wb2rf_wdata 
+                       : reg_iex_rf_rd2);
 
     // reg [31:0] iex_rd1_src;
     // reg [31:0] iex_rd2_src;
@@ -319,8 +319,8 @@ module exu (
     wire alu_comp_out, pc_src1;
     assign alu_op1 = reg_iex_csr_sel[1] ? iex_csr_rd : iex_rd1_src;
     assign alu_op2 = reg_iex_csr_sel[0] ? ~iex_rd1_src 
-                : reg_iex_alu_op2_sel ? reg_iex_imm 
-                : iex_rd2_src;
+                   : reg_iex_alu_op2_sel ? reg_iex_imm 
+                   : iex_rd2_src;
 
     alu alu_u (
         .op(reg_iex_alu_op),
@@ -380,8 +380,8 @@ module exu (
     wire [31:0] iex_jalr_pc;
     assign iex_jalr_pc    = {alu_out[31:1], 1'b0};
     assign iex_jump_pc    = reg_iex_pc_src0  ? iex_jalr_pc 
-                        : reg_iex_bp_taken ? reg_iex_pc_plus
-                        : iex_pc_plus_imm;
+                          : reg_iex_bp_taken ? reg_iex_pc_plus
+                          : iex_pc_plus_imm;
 
     assign iex_jump_valid = reg_iex_valid && pc_src1 && (!ac2iex_flush);
 
@@ -453,19 +453,19 @@ module exu (
     // assign iex2lsu_csr_re     = reg_iex_csr_re && (!ac2iex_flush);
     // assign iex2lsu_csr_wd     = iex_csr_wd;
 
-    assign iex2csr_wren           = reg_iex_csr_we && (!ac2iex_flush);
-    assign iex2csr_waddr          = reg_iex_inst[31:20];
-    assign iex2csr_wdata          = iex_csr_wd;
+    assign iex2csr_wren       = reg_iex_csr_we && (!ac2iex_flush);
+    assign iex2csr_waddr      = reg_iex_inst[31:20];
+    assign iex2csr_wdata      = iex_csr_wd;
 
     //obtain opcode and func
     wire [4:0]   inst_op_type;
     // wire [2:0]   inst_func3;
     wire [4:0]   inst_func5;
     wire [6:0]   inst_func7;
-    assign inst_op_type = reg_iex_inst[6:2];
-    assign inst_func7   = reg_iex_inst[31:25];
-    assign inst_func3   = reg_iex_inst[14:12];
-    assign inst_func5   = reg_iex_inst[24:20];
+    assign inst_op_type       = reg_iex_inst[6:2];
+    assign inst_func7         = reg_iex_inst[31:25];
+    assign inst_func3         = reg_iex_inst[14:12];
+    assign inst_func5         = reg_iex_inst[24:20];
     //TRI
     wire is_inst_func5_tri;
     wire is_inst_func3_null;
@@ -480,9 +480,9 @@ module exu (
     assign iex_except_code    = 4'h0;
     assign iex_valid          = iex2lsu_valid;
     assign iex_pc             = reg_iex_pc;
-    assign iex_next_pc        = iex_jump_valid ? iex_jump_pc 
-                            : branch_valid   ? iex_pc_plus_imm
-                            : reg_iex_pc_plus;
+    assign iex_next_pc        = reg_iex_pc_src0            ? iex_jalr_pc
+                              : (jal_valid | branch_valid) ? iex_pc_plus_imm
+                              : reg_iex_pc_plus;
     assign iex_mret           = is_mret;
 
 endmodule

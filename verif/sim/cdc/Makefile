@@ -31,7 +31,6 @@ vcs		:
 		-F flist.f \
 		-top cdc_s2f_pulse_tb \
 		-sverilog \
-		-v2k_generate \
 		-kdb \
 		-fsdb -full64 -R +vc+list -debug_access+all \
 		+backdoor_load_image=$(IMAGE_PATH) \

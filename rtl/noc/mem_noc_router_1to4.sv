@@ -1,8 +1,6 @@
 
 `include "inst_index.v"
 `include "macro.v"
-// `include "cfg.sv"
-// `include "typedef.sv"
 
 module mem_noc_router_1to4
     import urv_cfg::*;
@@ -56,8 +54,8 @@ module mem_noc_router_1to4
     input  mem_resp_t       sn3_resp
     // input  [MEM_ADDR_W-1:0] sn3_base_addr
 );
-    parameter MEM_REQ_T_W = $bits(mem_req_t);
-    parameter MEM_RESP_T_W = $bits(mem_resp_t);
+    localparam MEM_REQ_T_W  = $bits(mem_req_t);
+    localparam MEM_RESP_T_W = $bits(mem_resp_t);
 
     typedef enum logic [1:0] {
         SNOC0 = 2'b00,
@@ -75,12 +73,12 @@ module mem_noc_router_1to4
     logic [1:0] ff_mn_tid;
     logic       curt_noc_state;
     logic       next_noc_state;
-
+    
     // assign mn_tid = ((mn_req.req_addr ^ MEM_BASE_ADDR_CLINT) < MEM_REG_ADDR_W_IN_BYTE) ? SNOC0
     //               : ((mn_req.req_addr ^ MEM_BASE_ADDR_PLIC)  < MEM_REG_ADDR_W_IN_BYTE) ? SNOC1
     //               : ((mn_req.req_addr ^ MEM_BASE_ADDR_DM)    < MEM_REG_ADDR_W_IN_BYTE) ? SNOC2
     //               : SNOC3;
-    assign mn_tid = (mn_req.req_addr[31:12] == MEM_BASE_ADDR_CLINT[31:12])? SNOC0
+    assign mn_tid = (mn_req.req_addr[31:12] == MEM_BASE_ADDR_CLINT[31:12])  ? SNOC0
                     : (mn_req.req_addr[31:12] == MEM_BASE_ADDR_PLIC[31:12]) ? SNOC1
                     : (mn_req.req_addr[31:12] == MEM_BASE_ADDR_DM[31:12])   ? SNOC2
                     : SNOC3;

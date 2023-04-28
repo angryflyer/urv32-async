@@ -41,9 +41,17 @@ long insn()
 	return insns;
 }
 
-void trap_handle()
+void trap_handle(uint32_t mepc, uint32_t mcause, uint32_t mtval, uint32_t mtsatus, uint32_t timel, uint32_t timeh)
 {
-    printf("Enter trap_handle!\n");
+	// unsigned long long time_val;
+	// uint32_t timel_val, timeh_val;
+	// printf("Enter trap_handle!\r\n");
+	printf("Enter trap_handle! mepc=%x mcause=%x mtval=%x mtsatus=%x timel=%u timeh=%u\r\n", mepc, mcause, mtval, mtsatus, timel, timeh);
+	// timel_val = *(volatile uint32_t *)0x50004;
+	// timeh_val = *(volatile uint32_t *)0x50008;
+	// time_val  = (timeh_val << 32 | timel_val) + 634338468;
+	// *(volatile uint32_t *)0x5000c = time_val;
+	// *(volatile uint32_t *)0x50010 = time_val >> 32;
 }
 
 #ifdef USE_MYSTDLIB
@@ -57,9 +65,18 @@ char *malloc(int size)
 	return p;
 }
 
+// static void printf_c(int c)
+// {
+// 	*((volatile int*)0x10010000) = c;
+// }
+
 static void printf_c(int c)
 {
-	*((volatile int*)0x10010000) = c;
+	// *((volatile int*)0x10000008) = 0x43;
+    // // *((volatile int*)0x10000010) = 0x104;
+	// *((volatile int*)0x10000010) = (50000000 / 115200);
+    while((*((volatile int*)0x10000004) & 0x01) != 0x0);
+    *((volatile int*)0x10000000) = c;
 }
 
 static void printf_s(char *p)
@@ -84,33 +101,53 @@ static void printf_d(int val)
 		printf_c(*(--p));
 }
 
-int printf(const char *format, ...)
+// int printf(const char *format, ...)
+// {
+// 	int i;
+// 	va_list ap;
+
+// 	va_start(ap, format);
+
+// 	for (i = 0; format[i]; i++)
+// 		if (format[i] == '%') {
+// 			while (format[++i]) {
+// 				if (format[i] == 'c') {
+// 					printf_c(va_arg(ap,int));
+// 					break;
+// 				}
+// 				if (format[i] == 's') {
+// 					printf_s(va_arg(ap,char*));
+// 					break;
+// 				}
+// 				if (format[i] == 'd') {
+// 					printf_d(va_arg(ap,int));
+// 					break;
+// 				}
+// 			}
+// 		} else
+// 			printf_c(format[i]);
+
+// 	va_end(ap);
+// }
+
+int printf(const char *fmt, ...)
 {
-	int i;
-	va_list ap;
+    char    buf[2048], *p;
+    va_list args;
+    int     n = 0;
 
-	va_start(ap, format);
+    va_start(args, fmt);
+    vsprintf(buf, fmt, args);
+    va_end(args);
+    p = buf;
+    while (*p)
+    {
+        printf_c(*p);
+        n++;
+        p++;
+    }
 
-	for (i = 0; format[i]; i++)
-		if (format[i] == '%') {
-			while (format[++i]) {
-				if (format[i] == 'c') {
-					printf_c(va_arg(ap,int));
-					break;
-				}
-				if (format[i] == 's') {
-					printf_s(va_arg(ap,char*));
-					break;
-				}
-				if (format[i] == 'd') {
-					printf_d(va_arg(ap,int));
-					break;
-				}
-			}
-		} else
-			printf_c(format[i]);
-
-	va_end(ap);
+    return n;
 }
 
 void *memcpy(void *aa, const void *bb, long n)

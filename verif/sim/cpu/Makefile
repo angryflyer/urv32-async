@@ -18,18 +18,27 @@ ifndef BOOT
 	BOOT = ROM
 endif
 
+ifndef TB
+	TB = Default
+endif
+
+ifndef DEBUG
+	DEBUG = 0
+endif
+
 vcs		:
 		vcs 	\
 		-timescale=1ns/1ns \
 		+define+$(TB)=1 \
 		+define+$(FSDB)=1 \
 		+define+$(BOOT)=1 \
+		+define+DB=$(DEBUG) \
 		+define+SIM_FREQ=32 \
 		+define+SIM_TIME=100 \
 		+define+SIM_PERIOD=15.625 \
 		+incdir+${INC_DIR} \
 		-F flist.f \
-		-top cpu_top_tb \
+		-top urv_cpu_tb \
 		-sverilog \
 		-v2k_generate \
 		-kdb \
@@ -37,7 +46,7 @@ vcs		:
 		+backdoor_load_image=$(IMAGE_PATH) \
 		| tee vcs_$(TB).log
 verdi 	:
-		Verdi -SX -sv -F flist.f -ssf cpu_top_tb.fsdb -top cpu_top_tb -sswr signal.rc &
+		Verdi -sv -F flist.f -ssf urv_cpu_tb.fsdb -top urv_cpu_tb -sswr signal.rc &
 
 dhrystone: 
 	cd ../../../firmware/dhrystone/ && make

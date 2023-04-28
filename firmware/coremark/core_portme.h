@@ -36,7 +36,9 @@ Original Author: Shay Gal-on
 #define ITERATIONS 330
 #endif
 
+#ifndef NSECS_PER_SEC
 #define NSECS_PER_SEC              32000000l
+#endif
 #define CORETIMETYPE               clock_t
 #define GETMYTIME(_t)              (*_t = cycle_time())
 #define MYTIMEDIFF(fin, ini)       ((fin) - (ini))

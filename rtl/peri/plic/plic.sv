@@ -61,6 +61,8 @@ logic ff_ready;
 logic ff_taken;
 logic ff_wr_en;
 logic ff_rd_en;
+logic mem_req_handshaked;
+logic mem_resp_handshaked;
 
 logic [PLIC_CLAIM_W-1:0] ff_addr;
 logic [MEM_DATA_W-1:0] ff_wdata;;
@@ -74,9 +76,12 @@ assign ff_wdata         = mem_req.req_data;
 assign ff_wmask         = mem_req.req_mask;
 assign ff_addr          = mem_req.req_addr[PLIC_CLAIM_W-1+2:2]; // 64 registers
 assign ff_ready         = ~ff_busy;
-assign ff_taken         = mem_req_valid && ff_ready;
-assign ff_wr_en         = ff_taken && (mem_req.req_type == MEM_WRITE);
-assign ff_rd_en         = ff_taken && (mem_req.req_type == MEM_READ);
+assign ff_taken         = mem_req_handshaked;
+assign ff_wr_en         = mem_req_handshaked && (mem_req.req_type == MEM_WRITE);
+assign ff_rd_en         = mem_req_handshaked && (mem_req.req_type == MEM_READ);
+
+assign mem_req_handshaked = mem_req_valid && mem_req_ready;
+assign mem_resp_handshaked= mem_resp_valid && mem_resp_ready;
 
 generate
 	for(genvar i = 1; i < PLIC_IRQ_N + 4; i = i + 1) begin : FF_WR_EN_GEN
@@ -90,10 +95,13 @@ generate
 	end
 endgenerate
 
-stdffr #(1) ff_busy_u (
+stdffref #(1) ff_busy_u (
     .clk(clk),
     .rstn(rstn),
-    .d(ff_taken),
+    .flush(mem_req_handshaked),
+    .flush_val(1'b1),
+    .en(mem_resp_handshaked),
+    .d(1'b0),
     .q(ff_busy) 
 );
 
@@ -309,8 +317,10 @@ assign ff_out = ff_plic_rd_en[PLIC_IRQ_N]   ? ff_plic_ip
               : ff_plic_rd_en[PLIC_IRQ_N+3] ? ff_plic_claim_complete
               : ff_out_pri;
 
-assign mem_req_ready       = mem_req_valid;
+// assign mem_req_ready       = mem_req_valid;
+assign mem_req_ready       = ff_ready;
 assign mem_resp_valid      = ff_busy;
-assign mem_resp.resp_data  = resp_data;     
+assign mem_resp.resp_data  = resp_data;
+assign mem_resp.resp_last  = mem_resp_valid;
 
 endmodule

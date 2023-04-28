@@ -1,10 +1,9 @@
 `timescale 1 ns / 1 ps
 
 
-module cdc_mem_noc_tb
+module cdc_mem_noc_tb;
     import urv_cfg::*;
     import urv_typedef::*; 
-;
 
 logic            clock;
 logic            rstn_d;

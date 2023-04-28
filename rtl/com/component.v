@@ -2,17 +2,17 @@
 `include "macro.v"
 
 module mux2to1 #(
-    parameter bus_width = 8'd32
+    parameter W = 32
 ) (
     input sel,
 
-    input [bus_width-1:0] in0,
-    input [bus_width-1:0] in1,
+    input [W-1:0] in0,
+    input [W-1:0] in1,
 
-    output [bus_width-1:0] out
+    output [W-1:0] out
 );
 assign out = sel ? in1 : in0;
-// reg [bus_width-1:0] reg_out;
+// reg [W-1:0] reg_out;
 // always @(*) begin
 //     case(sel)
 //         `ASSERT : reg_out = in1;
@@ -28,19 +28,19 @@ endmodule
 `define IN2_4TO1 2'b10
 `define IN3_4TO1 2'b11
 module mux4to1 #(
-    parameter bus_width = 8'd32
+    parameter W = 32
 ) (
     input [1:0] sel,
 
-    input [bus_width-1:0] in0,
-    input [bus_width-1:0] in1,
-    input [bus_width-1:0] in2,
-    input [bus_width-1:0] in3,
+    input [W-1:0] in0,
+    input [W-1:0] in1,
+    input [W-1:0] in2,
+    input [W-1:0] in3,
 
-    output [bus_width-1:0] out
+    output [W-1:0] out
 );
 wire s0, s1;
-wire [bus_width-1:0] out0, out1;
+wire [W-1:0] out0, out1;
 
 assign s0 = sel[0];
 assign s1 = sel[1];
@@ -48,7 +48,7 @@ assign s1 = sel[1];
 assign out0 = s0 ? in1 : in0;
 assign out1 = s0 ? in3 : in2;
 assign out  = s1 ? out1 : out0;
-// reg [bus_width-1:0] reg_out;
+// reg [W-1:0] reg_out;
 
 // always @(*) begin
 //     (*parallel_case*)
@@ -74,25 +74,25 @@ endmodule
 `define IN6_8TO1 3'b110
 `define IN7_8TO1 3'b111
 module mux8to1 #(
-    parameter bus_width = 8'd32
+    parameter W = 32
 ) (
     input [3:0] sel,
 
-    input [bus_width-1:0] in0,
-    input [bus_width-1:0] in1,
-    input [bus_width-1:0] in2,
-    input [bus_width-1:0] in3,
-    input [bus_width-1:0] in4,
-    input [bus_width-1:0] in5,
-    input [bus_width-1:0] in6,
-    input [bus_width-1:0] in7,
+    input [W-1:0] in0,
+    input [W-1:0] in1,
+    input [W-1:0] in2,
+    input [W-1:0] in3,
+    input [W-1:0] in4,
+    input [W-1:0] in5,
+    input [W-1:0] in6,
+    input [W-1:0] in7,
 
-    output [bus_width-1:0] out
+    output [W-1:0] out
 );
 
 wire [1:0] s0;
 wire s1;
-wire [bus_width-1:0] out0, out1;
+wire [W-1:0] out0, out1;
 
 assign s0 = sel[1:0];
 assign s1 = sel[2];
@@ -101,7 +101,7 @@ mux4to1 mux4to1_u0(.sel(s0), .in0(in0), .in1(in1), .in2(in2), .in3(in3), .out(ou
 mux4to1 mux4to1_u1(.sel(s0), .in0(in4), .in1(in5), .in2(in6), .in3(in7), .out(out1));
 assign  out = s1 ? out1 : out0;
 
-// reg [bus_width-1:0] reg_out;
+// reg [W-1:0] reg_out;
 
 // always @(*) begin
 //     (*parallel_case*)
@@ -357,16 +357,16 @@ endmodule
 
 // adder
 module adder #(
-    parameter bus_width = 8'd32
+    parameter W = 32
 ) (
-    input [bus_width-1:0] in0,
-    input [bus_width-1:0] in1,
+    input [W-1:0] in0,
+    input [W-1:0] in1,
 
-    output [bus_width-1:0] out
+    output [W-1:0] out
 );
 // 暴力加法器，其效果依赖于综合器
 assign out = in0 + in1;
-// reg [bus_width-1:0] reg_out;
+// reg [W-1:0] reg_out;
 // always @(*) begin
 //     reg_out = in0 + in1;
 // end
@@ -376,12 +376,12 @@ assign out = in0 + in1;
 endmodule
 
 module shifter_r #(
-    parameter bus_width = 8'd32
+    parameter W = 32
 ) (
-    input [bus_width-1:0] in0,
+    input [W-1:0] in0,
     input [4:0] in1,
 
-    output [bus_width-1:0] out
+    output [W-1:0] out
 );
 
 assign out = $signed(in0) >>> in1;
@@ -389,16 +389,16 @@ assign out = $signed(in0) >>> in1;
 endmodule
 
 module reverse #(
-    parameter bus_width = 8'd32
+    parameter W = 32
 ) (
-    input [bus_width-1:0] in,
-    output [bus_width-1:0] out
+    input [W-1:0] in,
+    output [W-1:0] out
 );
     genvar i; 
     generate   
-        for (i=0; i < bus_width; i=i+1) 
+        for (i=0; i < W; i=i+1) 
         begin : inverse
-            assign out[i] = in[bus_width-1-i];
+            assign out[i] = in[W-1-i];
         end
     endgenerate
 
@@ -407,23 +407,23 @@ endmodule
 
 //to do
 module alu #(
-    parameter bus_width = 8'd32
+    parameter W = 32
 ) (
     input [3:0] op,
 
-    input [bus_width-1:0] in0,
-    input [bus_width-1:0] in1,
+    input [W-1:0] in0,
+    input [W-1:0] in1,
 
     output comp,
-    output [bus_width-1:0] out
+    output [W-1:0] out
 );
 
-wire [bus_width-1:0] wire_op1;
-wire [bus_width-1:0] wire_op2;
+wire [W-1:0] wire_op1;
+wire [W-1:0] wire_op2;
 
-wire [bus_width-1:0] op1;
-wire [bus_width-1:0] op2;
-wire [bus_width-1:0] adder_out;
+wire [W-1:0] op1;
+wire [W-1:0] op2;
+wire [W-1:0] adder_out;
 
 assign op1 = in0; 
 assign op2 = in1;
@@ -436,7 +436,7 @@ assign is_cmp_inv = op[0];
 assign is_cmp_eq = ~op[3];
 
 // ADD, SUB  
-wire [bus_width-1:0] op2_inv, op1_xor_op2;
+wire [W-1:0] op2_inv, op1_xor_op2;
 assign op2_inv = is_sub ? ~op2 : op2;
 assign op1_xor_op2 = op1 ^ op2;
 assign wire_op1 = op1;
@@ -450,10 +450,10 @@ assign slt = (op1[31] == op2[31]) ? adder_out[31] : ((is_cmp_u ? op2[31] : op1[3
 assign comp = is_cmp_inv ^ (is_cmp_eq ? (op1_xor_op2 == `WORD_DEASSERT) : slt);
 
 // SLL, SRL, SRA
-wire [bus_width-1:0] shout;
+wire [W-1:0] shout;
 
 wire [31:0] shin_hi;
-wire [bus_width-1:0] shin_r, shin_l, shin, shout_r, shout_l;
+wire [W-1:0] shin_r, shin_l, shin, shout_r, shout_l;
 
 wire [4:0] shamt;
 assign shamt = op2[4:0];
@@ -469,19 +469,19 @@ assign shout = (((op == `ALU_OP_SRL) | (op == `ALU_OP_SRA)) ? shout_r : `WORD_DE
 
 
 // AND, OR, XOR
-wire [bus_width-1:0]  logic_out;
+wire [W-1:0]  logic_out;
 
 assign logic_out = (((op == `ALU_OP_XOR) | (op == `ALU_OP_OR)) ? op1_xor_op2 : `WORD_DEASSERT)
                  | (((op == `ALU_OP_OR) | (op == `ALU_OP_AND)) ? op1 & op2 : `WORD_DEASSERT);
 
 // alu out
-wire [bus_width-1:0] alu_out;
+wire [W-1:0] alu_out;
 assign alu_out = (op == `ALU_OP_ADD) | (op == `ALU_OP_SUB) ? adder_out : ({{(31){1'b0}}, is_cmp & slt} | logic_out | shout);
 
 assign out = alu_out;
 
 
-// reg [bus_width-1:0] reg_out; 
+// reg [W-1:0] reg_out; 
 // reg reg_comp;
 // reg reg_bge;
 // reg reg_blt;
@@ -491,10 +491,10 @@ assign out = alu_out;
 // reg reg_logic_mode;
 // reg reg_compare_mode;
 
-// reg [bus_width-1:0] reg_in0;
-// reg [bus_width-1:0] reg_in1;
-// reg [bus_width-1:0] reg_addout;
-// reg [bus_width-1:0] reg_logicout;
+// reg [W-1:0] reg_in0;
+// reg [W-1:0] reg_in1;
+// reg [W-1:0] reg_addout;
+// reg [W-1:0] reg_logicout;
 // always @(*) begin
 //     (* parallel_case, full_case *)
 //     reg_logic_mode = `ASSERT;

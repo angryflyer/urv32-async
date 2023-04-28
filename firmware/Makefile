@@ -1,4 +1,4 @@
-RISCV_GNU_TOOLCHAIN_INSTALL_PREFIX = /work/home/zhaowei/work/software/tool
+RISCV_GNU_TOOLCHAIN_INSTALL_PREFIX = /home/autumn/work/tool
 TOOLCHAIN_PREFIX = $(RISCV_GNU_TOOLCHAIN_INSTALL_PREFIX)/riscv/bin/
 # ---- iCE40 HX8K Breakout Board ----
 DEPENDENCIES := -lpthread

@@ -24,7 +24,7 @@ module clint
 
     output                  soft_irq,
     output                  time_irq,
-    output [CSR_TIME_W-1:0] time_val     
+    output [CSR_TIME_W-1:0] time_val   
 );
 
 localparam CLINT_SOFTINT_ADDR_OFFSET    = 3'h0; // 0 soft int
@@ -37,6 +37,8 @@ localparam CLINT_MTIME_EN_ADDR_OFFSET   = 3'h5; // 14
 logic ff_busy;
 logic ff_ready;
 logic ff_taken;
+logic mem_req_handshaked;
+logic mem_resp_handshaked;
 logic ff_wr_en;
 logic soft_int_wr_en;
 logic mtimel_wr_en;
@@ -66,12 +68,15 @@ assign ff_wdata         = mem_req.req_data;
 assign ff_wmask         = mem_req.req_mask;
 assign ff_addr          = mem_req.req_addr[4:2];
 assign ff_ready         = ~ff_busy;
-assign ff_taken         = mem_req_valid && ff_ready;
-assign ff_wr_en         = ff_taken && (mem_req.req_type == MEM_WRITE);
+assign ff_taken         = mem_req_handshaked;
+assign ff_wr_en         = mem_req_handshaked && (mem_req.req_type == MEM_WRITE);
 assign mtime_count_en   = ff_out_5[0];
 assign mtime_count_q    = {ff_out_2, ff_out_1};
 assign mtime_cmp_count_q= {ff_out_4, ff_out_3};
 assign mtime_count_d    = mtime_count_q + 1'b1;
+
+assign mem_req_handshaked = mem_req_valid && mem_req_ready;
+assign mem_resp_handshaked= mem_resp_valid && mem_resp_ready;
 
 assign soft_int_wr_en   = ff_wr_en && (ff_addr == CLINT_SOFTINT_ADDR_OFFSET);
 assign mtimel_wr_en     = ff_wr_en && (ff_addr == CLINT_MTIMEL_ADDR_OFFSET);
@@ -80,10 +85,13 @@ assign mtimel_cmp_wr_en = ff_wr_en && (ff_addr == CLINT_MTIMEL_CMP_ADDR_OFFSET);
 assign mtimeh_cmp_wr_en = ff_wr_en && (ff_addr == CLINT_MTIMEH_CMP_ADDR_OFFSET);
 assign mtime_en_wr_en   = ff_wr_en && (ff_addr == CLINT_MTIME_EN_ADDR_OFFSET);
 
-stdffr #(1) ff_busy_u (
+stdffref #(1) ff_busy_u (
     .clk(clk),
     .rstn(rstn),
-    .d(ff_taken),
+    .flush(mem_req_handshaked),
+    .flush_val(1'b1),
+    .en(mem_resp_handshaked),
+    .d(1'b0),
     .q(ff_busy) 
 );
 
@@ -176,9 +184,11 @@ begin
   endcase
 end
 
-assign mem_req_ready       = mem_req_valid;
+// assign mem_req_ready       = mem_req_valid;
+assign mem_req_ready       = ff_ready;
 assign mem_resp_valid      = ff_busy;
 assign mem_resp.resp_data  = resp_data;
+assign mem_resp.resp_last  = mem_resp_valid;
 
 assign soft_irq = ff_out_0[0];
 assign time_irq = mtime_count_en && (unsigned'(mtime_count_q) >= unsigned'(mtime_cmp_count_q));

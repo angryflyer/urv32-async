@@ -679,10 +679,33 @@ ee_vsprintf(char *buf, const char *fmt, va_list args)
 //     */
 // }
 
-void
-uart_send_char(char c)
+// void
+// uart_send_char(char c)
+// {
+// 	*((volatile int*)0x10010000) = c;
+// }
+
+#define REGBLK_SUBSYS_UART_ADDR 0x10000000
+// #define REGBLK_SUBSYS_UART_ADDR 0xFF027000
+#define UART_DATA_ADDR  (REGBLK_SUBSYS_UART_ADDR + 0x0)
+#define UART_STATE_ADDR (REGBLK_SUBSYS_UART_ADDR + 0x4)
+#define UART_CTRL_ADDR  (REGBLK_SUBSYS_UART_ADDR + 0x8)
+#define UART_INT_ADDR   (REGBLK_SUBSYS_UART_ADDR + 0xC)
+#define UART_BAUD_ADDR  (REGBLK_SUBSYS_UART_ADDR + 0x10)
+#define UART_PID4_ADDR  (REGBLK_SUBSYS_UART_ADDR + 0xFD0)
+void uart_send_char(char c)
 {
-	*((volatile int*)0x10010000) = c;
+	*((volatile int*)UART_CTRL_ADDR) = 0x03;
+    // *((volatile int*)0x10000010) = 0x104;//30MHz/260=115200
+    // *((volatile int*)0x10000010) = 0x1B2; //50MHHz/434=115200
+    // *((volatile int*)UART_BAUD_ADDR) = (NSECS_PER_SEC / 115200);
+    *((volatile int*)UART_BAUD_ADDR) = (50000000 / 115200);
+    while((*((volatile int*)UART_STATE_ADDR) & 0x01) != 0x0);
+    *((volatile int*)UART_DATA_ADDR) = c;
+    // while((*((volatile int*)0x10000004) & 0x02) == 0x0);
+    // while((*((volatile int*)0x10000004) & 0x01) != 0x0);
+    // c = *((volatile int*)0x10000000);
+    // *((volatile int*)0x10000000) = c;
 }
 
 int

@@ -88,7 +88,13 @@ module mem_noc
     logic            mn0_sn0_tid, mn0_sn1_tid;
     logic            mn1_sn0_tid, mn1_sn1_tid;
 
-    mem_noc_router_1to2 mn0_router_1to2_u (
+    localparam DEC_TAG_VAL = `RAM_BASE_ADDR;
+    mem_noc_router_1to2 #(
+        .DEC_NUM(2),
+        .DEC_TAG_H(31),
+        .DEC_TAG_L(16),
+        .DEC_TAG_VAL(DEC_TAG_VAL[31:16])
+    ) mn0_router_1to2_u (
         .clk(clk),
         .rstn(rstn),
         //noc master 0 
@@ -116,7 +122,12 @@ module mem_noc
         .sn1_tid(mn0_sn1_tid)        
     );
 
-    mem_noc_router_1to2 mn1_router_1to2_u (
+    mem_noc_router_1to2 #(
+        .DEC_NUM(2),
+        .DEC_TAG_H(31),
+        .DEC_TAG_L(16),
+        .DEC_TAG_VAL(DEC_TAG_VAL[31:16])
+    ) mn1_router_1to2_u (
         .clk(clk),
         .rstn(rstn),
         //noc master 0 

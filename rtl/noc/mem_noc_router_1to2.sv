@@ -1,13 +1,13 @@
 
-`include "inst_index.v"
-`include "macro.v"
-// `include "cfg.sv"
-// `include "typedef.sv"
-
 module mem_noc_router_1to2
     import urv_cfg::*;
     import urv_typedef::*; 
-(
+#(
+    parameter DEC_NUM       = 2,
+    parameter DEC_TAG_H     = 31,
+    parameter DEC_TAG_L     = 28,
+    parameter DEC_TAG_VAL   = {(DEC_TAG_H-DEC_TAG_L+1){1'b0}}
+) (
     input  logic            clk,
     input  logic            rstn,
 
@@ -38,8 +38,9 @@ module mem_noc_router_1to2
     input  mem_resp_t       sn1_resp,
     output logic            sn1_tid
 );
-    parameter MEM_REQ_T_W = $bits(mem_req_t);
-    parameter MEM_RESP_T_W = $bits(mem_resp_t);
+    localparam MEM_REQ_T_W  = $bits(mem_req_t);
+    localparam MEM_RESP_T_W = $bits(mem_resp_t);
+    localparam DEC_TAG_W    = DEC_TAG_H - DEC_TAG_L + 1;
 
     typedef enum logic {
         SNOC0 = 1'b0,
@@ -56,8 +57,18 @@ module mem_noc_router_1to2
     logic       curt_noc_state;
     logic       next_noc_state;
 
-    assign mn_tid = ((mn_req.req_addr ^ `ROM_BASE_ADDR)  < `ROM_WIDTH_IN_BYTE) ? SNOC0
-                    : SNOC1;
+    logic       [DEC_TAG_W-1:0]                 dec_tag;
+    logic                                       is_tag_match;
+    logic                                       is_idx_match;
+    // obtain dec_tag and dec_idx
+    assign dec_tag      = mn_req.req_addr[DEC_TAG_H:DEC_TAG_L];
+    assign is_tag_match = (dec_tag == DEC_TAG_VAL);
+
+    // assign mn_tid = ((mn_req.req_addr ^ MEM_BASE_ADDR_ROM) < ROM_WIDTH_IN_BYTE) ? SNOC0
+    //               : SNOC1;    
+
+    assign mn_tid = is_tag_match ? SNOC0
+                  : SNOC1;
 
     logic mn_sn0_tid;
     logic mn_sn1_tid;
@@ -73,7 +84,7 @@ module mem_noc_router_1to2
     assign mn_sn1_tid = mn_req_valid && (mn_tid == SNOC1);
 
     assign mn_req_handshaked = mn_req_valid  && mn_req_ready;
-    assign mn_resp_handshaked= mn_resp_valid && mn_resp_ready;
+    assign mn_resp_handshaked= mn_resp_valid && mn_resp_ready && mn_resp.resp_last;
 
     assign ff_mn_tid_en   = (is_noc_req && mn_req_handshaked) | (is_noc_resp && mn_resp_handshaked);
 
@@ -102,7 +113,7 @@ module mem_noc_router_1to2
             end
             NOC_RESP : begin
                 next_noc_state = ~mn_resp_handshaked ? NOC_RESP 
-                                : mn_req_handshaked   ? NOC_RESP
+                                : mn_req_handshaked  ? NOC_RESP
                                 : NOC_REQ;            
             end
         endcase
@@ -137,8 +148,11 @@ module mem_noc_router_1to2
         endcase
     end
 
-    assign sn0_resp_ready = (ff_mn_tid == SNOC0) ? mn_resp_ready : 1'b0;
-    assign sn1_resp_ready = (ff_mn_tid == SNOC1) ? mn_resp_ready : 1'b0;
+    // assign sn0_resp_ready = (ff_mn_tid == SNOC0) ? mn_resp_ready : 1'b0;
+    // assign sn1_resp_ready = (ff_mn_tid == SNOC1) ? mn_resp_ready : 1'b0;
+
+    assign sn0_resp_ready = mn_resp_ready;
+    assign sn1_resp_ready = mn_resp_ready;
 
     always_comb  begin
         case(ff_mn_tid)

@@ -1,6 +1,10 @@
-//cdc mem bus
-`include "inst_index.v"
-`include "macro.v"
+//===============================================
+//Name          : cdc_mem_noc
+//Author        : angrybird
+//Email         : 
+//Date          : 2022-12-31
+//Description   : mem_if cdc with async fifo
+//===============================================
 
 module cdc_mem_noc 
     import urv_cfg::*;
@@ -29,8 +33,8 @@ module cdc_mem_noc
     input  mem_resp_t dest_resp
 );
 
-    parameter MEM_REQ_T_W  = $bits(mem_req_t);
-    parameter MEM_RESP_T_W = $bits(mem_resp_t);
+    localparam MEM_REQ_T_W  = $bits(mem_req_t);
+    localparam MEM_RESP_T_W = $bits(mem_resp_t);
 
     // mem_req
     logic src_req_wr_en;
@@ -163,7 +167,7 @@ module cdc_mem_noc
     // );
 
     // mem_resp 
-
+    assign dest_resp_ready   = ~dest_resp_full;
     assign dest_resp_wr_en   = dest_resp_valid && ~dest_resp_full;
 
     assign dest_resp_wr_data = dest_resp;

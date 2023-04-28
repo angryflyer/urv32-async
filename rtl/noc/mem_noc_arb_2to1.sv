@@ -7,8 +7,8 @@ module mem_noc_arb_2to1
     import urv_cfg::*;
     import urv_typedef::*; 
 (
-    input  clk,
-    input  rstn,
+    input             clk,
+    input             rstn,
 
     // noc master 0
     input             mn0_req_valid,
@@ -40,8 +40,8 @@ module mem_noc_arb_2to1
     input             sn_tid
 );
 
-    parameter MEM_REQ_T_W = $bits(mem_req_t);
-    parameter MEM_RESP_T_W = $bits(mem_resp_t);
+    localparam MEM_REQ_T_W = $bits(mem_req_t);
+    localparam MEM_RESP_T_W = $bits(mem_resp_t);
 
     typedef enum logic {
         SNOC0 = 1'b0,
@@ -97,13 +97,19 @@ module mem_noc_arb_2to1
     logic [MEM_ADDR_W-1:0] mn0_addr, mn1_addr;
     logic mn0_valid, mn1_valid;
 
-    logic mn0_req_handshaked;
-    logic mn1_req_handshaked;
+    // logic mn0_req_handshaked;
+    // logic mn1_req_handshaked;
     logic mn0_resp_handshaked;
     logic mn1_resp_handshaked;
+    logic sn_req_handshaked;
+    logic sn_resp_handshaked;
 
+    // assign mn0_req_handshaked = mn0_req_valid && mn0_req_ready;
+    // assign mn1_req_handshaked = mn1_req_valid && mn1_req_ready;
+    assign mn0_resp_handshaked = mn0_resp_valid && mn0_resp_ready && mn0_resp.resp_last;
+    assign mn1_resp_handshaked = mn1_resp_valid && mn1_resp_ready && mn1_resp.resp_last;
     assign sn_req_handshaked  = sn_req_valid  && sn_req_ready;
-    assign sn_resp_handshaked = sn_resp_valid && sn_resp_ready;
+    assign sn_resp_handshaked = sn_resp_valid && sn_resp_ready && sn_resp.resp_last;
 
     assign arb_state_en   = (is_noc_req && sn_req_handshaked) | (is_noc_resp && sn_resp_handshaked);
 
@@ -166,10 +172,10 @@ module mem_noc_arb_2to1
 		next_arb_state = arb_state;
 		case(arb_state)
 			MNOC0 : begin 
-				next_arb_state = !is_mn0_sn ? (is_mn1_sn ? MNOC1 : MNOC0) : MNOC0;
+				next_arb_state = (!is_mn0_sn & (is_noc_req | (is_noc_resp & mn0_resp_handshaked))) ? (is_mn1_sn ? MNOC1 : MNOC0) : MNOC0;
 			end
 			MNOC1 : begin
-				next_arb_state = !is_mn1_sn ? (is_mn0_sn ? MNOC0 : MNOC1) : MNOC1;
+				next_arb_state = (!is_mn1_sn & (is_noc_req | (is_noc_resp & mn1_resp_handshaked))) ? (is_mn0_sn ? MNOC0 : MNOC1) : MNOC1;
 			end
 		endcase
 	end

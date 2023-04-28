@@ -1,0 +1,83 @@
+Magic 271485
+Revision Verdi_R-2020.12-SP1
+
+; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
+viewPort 0 25 1920 633 163 65
+
+; File list:
+; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
+openDirFile -d / "" "/home/autumn/work/project/urv32-async/verif/sim/ahb/mem2ahb_tb.fsdb"
+
+; file time scale:
+; fileTimeScale ### s|ms|us|ns|ps
+
+; signal spacing:
+signalSpacing 5
+
+; windowTimeUnit is used for zoom, cursor & marker
+; waveform viewport range
+zoom 0.000000 344208.000000
+cursor 535000.000000
+marker 0.000000
+
+; user define markers
+; userMarker time_pos marker_name color linestyle
+; visible top row signal index
+top 0
+; marker line index
+markerPos 1
+
+; event list
+; addEvent event_name event_expression
+; curEvent event_name
+
+
+
+COMPLEX_EVENT_BEGIN
+
+
+COMPLEX_EVENT_END
+
+
+
+; toolbar current search type
+; curSTATUS search_type
+curSTATUS ByChange
+
+
+addGroup "G3"
+activeDirFile "" "/home/autumn/work/project/urv32-async/verif/sim/ahb/mem2ahb_tb.fsdb"
+addSignal -h 15 /mem2ahb_tb/mem2ahb_u/clk
+addSignal -h 15 /mem2ahb_tb/ahb_sram_u/rstn
+addSignal -h 15 /mem2ahb_tb/mem2ahb_u/mem_req_valid
+addSignal -h 15 -holdScope mem_req_ready
+addSignal -h 15 -holdScope mem_req
+addSignal -h 15 -holdScope mem_resp_valid
+addSignal -h 15 -holdScope mem_resp_ready
+addSignal -h 15 -holdScope mem_resp
+addSignal -h 15 -holdScope curt_ahb_state
+addGroup "G1"
+addSignal -h 15 /mem2ahb_tb/mem2ahb_u/is_ahb_idle
+addSignal -h 15 /mem2ahb_tb/ahb_sram_u/htrans[1:0]
+addSignal -h 15 -holdScope haddr[31:0]
+addSignal -h 15 -holdScope hwrite
+addSignal -h 15 -holdScope hsize[2:0]
+addSignal -h 15 -holdScope hburst[2:0]
+addSignal -h 15 -holdScope hready
+addSignal -h 15 -holdScope hwdata[31:0]
+addSignal -h 15 -holdScope hreadyout
+addSignal -h 15 -holdScope hresp
+addSignal -h 15 -holdScope hrdata[31:0]
+addSignal -h 15 -holdScope clk
+addSignal -h 15 -holdScope offset_dff[5:0]
+addSignal -h 15 -holdScope data_phase_dff
+addSignal -h 15 -holdScope hwdata[31:0]
+addGroup "G2"
+addSignal -h 15 /mem2ahb_tb/ahb_sram_u/mem[0:63]
+addGroup "G5"
+addGroup "G4"
+addGroup "G6"
+
+; getSignalForm Scope Hierarchy Status
+; active file of getSignalForm
+

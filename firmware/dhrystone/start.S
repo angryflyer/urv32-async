@@ -2,6 +2,16 @@
 # define LOAD     lw
 # define REGBYTES 4
 
+#define REGBLK_SUBSYS_UART_ADDR 0x10000000
+##define REGBLK_SUBSYS_UART_ADDR 0xFF027000
+#define UART_DATA_ADDR  (REGBLK_SUBSYS_UART_ADDR + 0x0)
+#define UART_STATE_ADDR (REGBLK_SUBSYS_UART_ADDR + 0x4)
+#define UART_CTRL_ADDR  (REGBLK_SUBSYS_UART_ADDR + 0x8)
+#define UART_INT_ADDR   (REGBLK_SUBSYS_UART_ADDR + 0xC)
+#define UART_BAUD_ADDR  (REGBLK_SUBSYS_UART_ADDR + 0x10)
+#define UART_PID4_ADDR  (REGBLK_SUBSYS_UART_ADDR + 0xFD0) #0x04
+#define PRINT_BAUT      (50000000l / 115200)
+
 .section .text
 .global  _start
 #.set     test, 0x100
@@ -41,6 +51,16 @@ addi x28, zero, 0
 addi x29, zero, 0
 addi x30, zero, 0
 addi x31, zero, 0
+
+# init uart
+li a0, UART_CTRL_ADDR
+li a1, UART_BAUD_ADDR
+
+li t0, 0x43
+li t1, PRINT_BAUT
+
+sw t0, 0(a0)
+sw t1, 0(a1)
 
 # # div
 # li a0, -15
@@ -139,13 +159,22 @@ end_init_stack:
 
 # enable timer
 # li a0, 0x50010
-li a0, 0x5000c
+li a0, 0x50000
 li a1, 0x50014
 
-# init time cmp
-# li a3, 0x100
-li a3, -1
-sw a3, 0(a0)
+# init time zero
+li a3, 0x0
+sw a3, 1*4(a0)
+sw a3, 2*4(a0)
+sw a3, 3*4(a0)
+sw a3, 4*4(a0)
+
+# init time cmp gap
+li a3, 0x100
+# li a3, -1
+# li a3, 0x2FAF080
+sw a3, 3*4(a0)
+# sw a3, 4*4(a0)
 
 # init mtvec
 la t0, early_trap_entry 
@@ -174,7 +203,7 @@ li a3, 0x1
 sw a3, 0(a1)
 
 # call main
-call main
+# call main
 loop:
 j loop
 
@@ -186,7 +215,8 @@ early_trap_entry:
 	csrr a1, mcause
 	csrr a2, mtval
 	csrr a3, mstatus
-	jal trap_print
+	csrr a4, time
+	jal trap_handle
 #endif
     j early_trap_entry
 
@@ -225,19 +255,25 @@ early_trap_entry:
 	STORE x30, 30*REGBYTES(sp)
 	STORE x31, 31*REGBYTES(sp)
 
-	csrr a0, mcause
-	csrr a1, mepc
-	mv a2, sp
+	csrr a0, mepc
+	csrr a1, mcause
+	csrr a2, mtval
+	csrr a3, mstatus
+	csrr a4, time
+	csrr a5, timeh
+	# mv   a4, sp
 	jal trap_handle
 
     # mtime count reg
-    li a0, 0x50004
+    li a0, 0x50000
     # mtime cmp reg
-    li a1, 0x5000c
-    li a2, 0x500
-    lw a3, 0(a0)
+    # li a2, 0x500
+	li a2, 0x40000000
+	# li a2, -1;
+    lw a3, 1*4(a0)
     add a3, a3, a2
-    sw a3, 0(a1)
+    sw a3, 3*4(a0)
+    # sw a2, 4*4(a0)
 
     # li a0, 0x5108c
     # lw t1, 0(a0)

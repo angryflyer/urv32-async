@@ -1,9 +1,6 @@
-##TARGET=riscv32-rivai-elf
-# TARGET=/work/home/zhaowei/work/software/gcc/bin/riscv32-rivai-elf
-# TARGET=/work/home/zhaowei/tian/pygmy/tool/riscv/bin/riscv32-unknown-elf
-RISCV =/work/home/zhaowei/work/software/tool/riscv
+RISCV =/home/autumn/work/tool/riscv
 TARGET=$(RISCV)/bin/riscv32-unknown-elf
-PROJ_ROOT=/work/home/zhaowei/work/software/urv32/firmware/coremark
+PROJ_ROOT=/home/autumn/work/project/urv32-async/firmware/coremark
 
 ifeq ($(APP_NAME),)
 	APP_NAME = coremark
@@ -29,15 +26,7 @@ PROG    = $(OUTPUT_BIN_DIR)/$(APP_NAME)
 WARNINGS= -Wall -Wextra -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-align -Wsign-compare \
           -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wunused
 
-# INCLUDES = \
-# 	-I/work/home/zhaowei/tian/pygmy/tool/riscv/riscv32-unknown-elf/include \
-# 	-I/work/home/zhaowei/tian/pygmy/tool/riscv/lib/gcc/riscv32-unknown-elf/8.3.0/include \
-# 	$(addprefix -I,$(SRC_DIR))
 
-# INCLUDES = \
-# 	-I$(PROJ_ROOT)/gcc/riscv32-rivai-elf/include \
-# 	-I$(PROJ_ROOT)/gcc/lib/gcc/riscv32-rivai-elf/10.2.1/include \
-# 	$(addprefix -I,$(SRC_DIR))
 
 INCLUDES = \
 	-I$(RISCV)/riscv32-unknown-elf/include \
@@ -64,8 +53,9 @@ CFLAGS += \
 # Each log level which less or equal LOG_LELVEL will be open, see driver/log.h
 MACROS = -DLOG_LEVEL=2
 MACROS += -DFLAGS_STR=\""$(FLAGS_STR)"\"
+MACROS += -DNSECS_PER_SEC=50*1000*1000
 MACROS += -DCORE_DEBUG=0
-MACROS += -DITERATIONS=1
+MACROS += -DITERATIONS=1300
 MACROS += -DBOOT_FROM_ROM
 # MACROS += -DPROFILE_RUN=1
 MACROS += -DPERFORMANCE_RUN=1
@@ -88,13 +78,7 @@ LDFLASG += --specs=nano.specs
 
 # dont need -L path due to search them by default actually. Anyway, it is fine to mark here
 # -lm should be the first one due to some APIs linking, e.g. floor()
-# LIBS	 = -L/work/home/zhaowei/tian/pygmy/tool/riscv/lib/gcc/riscv32-unknown-elf/8.3.0 \
-# 		   -L/work/home/zhaowei/tian/pygmy/tool/riscv/riscv32-unknown-elf/lib \
-# 		   -lm -lc -lgcc
 
-# LIBS	 = -L$(PROJ_ROOT)/gcc/lib/gcc/riscv32-rivai-elf/10.2.1 \
-# 		   -L$(PROJ_ROOT)/gcc/riscv32-rivai-elf/lib \
-# 		   -lm -lc -lgcc
 
 LIBS	 = -L$(RISCV)/lib/gcc/riscv32-unknown-elf/10.2.0 \
 		   -L$(RISCV)/riscv32-unknown-elf/lib \

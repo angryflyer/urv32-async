@@ -1,0 +1,13 @@
+../../rtl/cpu/core/reg.v
+../../rtl/cpu/core/acu.v
+../../rtl/cpu/core/pc.v
+../../rtl/cpu/core/ifu.v
+../../rtl/cpu/core/div.sv
+#../../rtl/cpu/core/muldiv.sv
+../../rtl/cpu/core/muldiv_vio.sv
+../../rtl/cpu/core/idu.v
+../../rtl/cpu/core/exu.v
+../../rtl/cpu/core/lsu.sv
+../../rtl/cpu/core/wbu.sv
+../../rtl/cpu/core/bpu.v
+../../rtl/cpu/core/urv_pipe.sv

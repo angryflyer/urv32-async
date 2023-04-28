@@ -224,11 +224,7 @@ module usoc_tb;
 
 usoc usoc_u(
     .clk(clk),
-    .rstn(rstn),
-    // output
-	.iex2lsu_pc(iex2lsu_pc),
-    .iex2ac_jump_valid(iex2ac_jump_valid),
-    .iex2ac_jump_pc(iex2ac_jump_pc)    
+    .rstn(rstn)
 );
 
 endmodule

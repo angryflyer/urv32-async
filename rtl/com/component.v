@@ -123,6 +123,29 @@ assign  out = s1 ? out1 : out0;
 
 endmodule
 
+// delay 2cycle
+module delay_2cycle
+(
+    input  clk,
+    input  rstn,
+    input  d,
+    output q    
+);
+reg q1, q2;
+
+always @(posedge clk or negedge rstn) begin
+    if(!rstn) begin
+        q1 <= 1'b0;
+        q2 <= 1'b0;
+    end else begin
+        q1 <= d;
+        q2 <= q1;
+    end
+end
+assign q = q2;
+
+endmodule
+
 // sync_async_reset 2cycles
 module sync_async_reset
 (

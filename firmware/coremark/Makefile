@@ -33,8 +33,8 @@ INCLUDES = \
 	-I$(RISCV)/lib/gcc/riscv32-unknown-elf/10.2.0/include \
 	$(addprefix -I,$(SRC_DIR))
 
-ASM_SRC = $(shell find $(SRC_DIR) -maxdepth 1 -name "*.S")
-C_SRC   = $(shell find $(SRC_DIR) -maxdepth 1 -name "*.c")
+ASM_SRC = $(shell find $(SRC_DIR) -maxdepth 2 -name "*.S")
+C_SRC   = $(shell find $(SRC_DIR) -maxdepth 2 -name "*.c")
 
 FLAGS_STR := -O3 -g
 CFLAGS = -O3 -g
@@ -53,9 +53,9 @@ CFLAGS += \
 # Each log level which less or equal LOG_LELVEL will be open, see driver/log.h
 MACROS = -DLOG_LEVEL=2
 MACROS += -DFLAGS_STR=\""$(FLAGS_STR)"\"
-MACROS += -DNSECS_PER_SEC=50*1000*1000
+MACROS += -DNSECS_PER_SEC=72*1000*1000
 MACROS += -DCORE_DEBUG=0
-MACROS += -DITERATIONS=1300
+MACROS += -DITERATIONS=2600
 MACROS += -DBOOT_FROM_ROM
 # MACROS += -DPROFILE_RUN=1
 MACROS += -DPERFORMANCE_RUN=1

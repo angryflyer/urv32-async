@@ -165,10 +165,14 @@ module urv_cpu_ahb_tb;
     //                   && urv_cpu_ahb_tb.urv_cpu_u.mem_noc_router_1to4_u.sn_req_ready[3] 
     //                   && (urv_cpu_ahb_tb.urv_cpu_u.mem_noc_router_1to4_u.sn_req[3].req_addr == 32'h10010000);
     // assign print_data  = print_valid ? urv_cpu_ahb_tb.urv_cpu_u.mem_noc_router_1to4_u.sn_req[3].req_data : 32'h0;
-    assign print_valid = urv_cpu_ahb_tb.urv_cpu_ahb_u.mem2ahb_u.mem_req_valid 
-                      && urv_cpu_ahb_tb.urv_cpu_ahb_u.mem2ahb_u.mem_req_ready
-                      && (urv_cpu_ahb_tb.urv_cpu_ahb_u.mem2ahb_u.mem_req.req_addr == 32'h10010000);
-    assign print_data  = print_valid ? urv_cpu_ahb_tb.urv_cpu_ahb_u.mem2ahb_u.mem_req.req_data : 32'h0;
+    // assign print_valid = urv_cpu_ahb_tb.urv_cpu_ahb_u.mem2ahb_u.mem_req_valid 
+    //                   && urv_cpu_ahb_tb.urv_cpu_ahb_u.mem2ahb_u.mem_req_ready
+    //                   && (urv_cpu_ahb_tb.urv_cpu_ahb_u.mem2ahb_u.mem_req.req_addr == 32'h10010000);
+    // assign print_data  = print_valid ? urv_cpu_ahb_tb.urv_cpu_ahb_u.mem2ahb_u.mem_req.req_data : 32'h0;
+    assign print_valid = urv_cpu_ahb_tb.ahb_uart_u.mem_wstrb
+                      && urv_cpu_ahb_tb.ahb_uart_u.hbus_ena_d
+                      && (urv_cpu_ahb_tb.ahb_uart_u.mem_addr == '0);
+    assign print_data  = print_valid ? urv_cpu_ahb_tb.ahb_uart_u.hwdata : 32'h0;
     always_ff @(posedge clk) begin
         if(print_valid) begin
                 $write("%c",print_data);
@@ -240,6 +244,16 @@ logic [6:0]                  hprot;
 logic [32-1:0]               hrdata;
 logic                        hresp;
 logic                        hready;
+
+//ahb slave mux
+logic                        hsel_1;
+logic                        hsel_2;
+logic [32-1:0]               hrdata_1;
+logic [32-1:0]               hrdata_2;
+logic                        hresp_1;
+logic                        hresp_2;
+logic                        hreadyout_1;
+logic                        hreadyout_2;
 
 logic                        jtag_tck;
 logic                        jtag_tms;
@@ -330,12 +344,33 @@ urv_cpu_ahb urv_cpu_ahb_u (
     .hready                 (hready)
 );
 
+ahb_slave_mux ahb_slave_mux_u (
+    .clk                    (clk), 
+    .rstn                   (cpu_rstn),
+    .s_haddr                (haddr),
+    .s_hsel_1               (hsel_1),
+    .s_hsel_2               (hsel_2),
+    .s_hsel                 (1'b1),
+    .s_hreadyout_1          (hreadyout_1),
+    .s_hreadyout_2          (hreadyout_2),
+    .s_hready               (hready),
+    .s_hrdata_1             (hrdata_1),
+    .s_hrdata_2             (hrdata_2),
+    .s_hrdata               (hrdata),
+    .s_hresp_1              (hresp_1),
+    .s_hresp_2              (hresp_2),
+    .s_hresp                (hresp),
+
+    .s_addr1                (RST_PC),
+    .s_addr2                (32'hFFFF_FFFF)
+);
+
 // ahb_sram #(
 //     .MEMSIZE(128*1024)
 // ) ahb_sram_u (
 //     .clk(clk),
 //     .rstn(cpu_rstn),
-//     .hsel(1'b1),
+//     .hsel(hsel_2),
 //     .clk_strobe(1'b1),
 //     .base_addr(RST_PC),
 //     .htrans(htrans),
@@ -345,17 +380,17 @@ urv_cpu_ahb urv_cpu_ahb_u (
 //     .hwdata(hwdata),
 //     .hwrite(hwrite),
 //     .hready(hready),
-//     .hrdata(hrdata),
-//     .hresp(hresp),
-//     .hreadyout(hready)
+//     .hrdata(hrdata_2),
+//     .hresp(hresp_2),
+//     .hreadyout(hreadyout_2)
 // );
 
 ahb_sram #(
-    .MEMSIZE(512*1024)
+    .MEMSIZE(2*512*1024)
 ) ahb_sram_u (
     .hclk(clk),
     .hreset_n(cpu_rstn),
-    .hsel(1'b1),
+    .hsel(hsel_2),
     .base_addr(RST_PC),
     .htrans(htrans),
     .haddr(haddr),
@@ -363,9 +398,27 @@ ahb_sram #(
     .hwdata(hwdata),
     .hwrite(hwrite),
     .hready_in(hready),
-    .hrdata(hrdata),
-    .hresp(hresp),
-    .hready_out(hready)
+    .hrdata(hrdata_2),
+    .hresp(hresp_2),
+    .hready_out(hreadyout_2)
+);
+
+ahb_sram #(
+    .MEMSIZE(1*1024)
+) ahb_uart_u (
+    .hclk(clk),
+    .hreset_n(cpu_rstn),
+    .hsel(hsel_1),
+    .base_addr(32'h10010000),
+    .htrans(htrans),
+    .haddr(haddr),
+    .hsize(hsize),
+    .hwdata(hwdata),
+    .hwrite(hwrite),
+    .hready_in(hready),
+    .hrdata(hrdata_1),
+    .hresp(hresp_1),
+    .hready_out(hreadyout_1)
 );
 
 `include "sdp_task.sv"

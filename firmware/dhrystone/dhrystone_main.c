@@ -232,7 +232,7 @@ int main (void)
   printf("\r\n");
 
 
-  Microseconds = ((User_Time / Number_Of_Runs) * Mic_secs_Per_Second) / HZ;//us
+  Microseconds = ((User_Time / Number_Of_Runs) / MHZ);//us
   Dhrystones_Per_Second = ((float)HZ  * Number_Of_Runs) / User_Time;//second
 
   // float    drystone = Dhrystones_Per_Second / 1757 / MHZ;

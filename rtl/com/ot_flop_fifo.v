@@ -165,7 +165,7 @@ module ot_flop_fifo
     assign overflow = push & full;
     
     //============== Assertions
-`ifdef RRV64_ASSERTION_EN
+`ifdef ASSERTION_EN
     chk_fifo_overflow: assert property (@(posedge clk) disable iff (~rstn) (~overflow)) else $fatal("%m: FIFO is overflow!!!");
 `endif
     

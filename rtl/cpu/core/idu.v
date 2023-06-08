@@ -97,7 +97,7 @@ module idu
     output id2iex_csr_re,
     //id2iex_csr_sel[0]->alu_op_sel
     //id2iex_csr_sel[1]->select source of rf_wd and csr_wd 
-    output [2:0]  id2iex_csr_sel,
+    output [3:0]  id2iex_csr_sel,
     output [31:0] id2iex_csr_rd,
 
     //id stall to if pc
@@ -239,7 +239,7 @@ module idu
 	assign id2iex_pc           = reg_id_pc;
 	assign id2iex_pc_plus      = reg_id_pc_plus;
 	//regard fence as nop instruction
-	assign id2iex_inst         = (is_fence | ac2id_flush) ? `I_INST_NOP : reg_id_inst;
+	assign id2iex_inst         = (is_fence | is_wfi | ac2id_flush) ? `I_INST_NOP : reg_id_inst;
 
 	assign id2iex_bp_taken     = reg_id_bp_taken;
 	assign id2iex_bp_match     = reg_id_bp_match;
@@ -297,11 +297,12 @@ module idu
 	wire csr_imm_re  = (is_csrrwi && id2iex_rd_neq_zero) | csr_csrrsi_csrrci;
 	wire csr_we      = csr_reg_we | csr_imm_we;
 	wire csr_re      = csr_reg_re | csr_imm_re;
-	wire [2:0] id_csr_sel;
+	wire [3:0] id_csr_sel;
 
 	assign id_csr_sel[0]  = csr_csrrs_csrrc;
 	assign id_csr_sel[1]  = csr_csrrs_csrrc | csr_csrrsi_csrrci;
 	assign id_csr_sel[2]  = is_i_csr_type;
+	assign id_csr_sel[3]  = csr_csrrc_csrrci;
 	assign id2iex_csr_sel = id_csr_sel;
 
 	assign id2iex_csr_we = csr_we && (!ac2id_flush);

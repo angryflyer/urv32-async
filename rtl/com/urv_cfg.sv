@@ -33,7 +33,7 @@ parameter MEM_BASE_ADDR_DTCM     = 32'h8008_0000;
 
 parameter MEM_BASE_ADDR_ROM      = 32'h0000_0000;
 parameter MEM_BASE_ADDR_RAM      = 32'h0002_0000;
-parameter DTCM_WIDTH_IN_BYTE     = 32'h0000_0400;
+parameter DTCM_WIDTH_IN_BYTE     = 32'h0002_0000;
 parameter ITCM_WIDTH_IN_BYTE     = 32'h0008_0000; 
 
 parameter RST_PC                 = MEM_BASE_ADDR_DDR;

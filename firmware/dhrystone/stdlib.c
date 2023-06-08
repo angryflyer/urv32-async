@@ -17,7 +17,7 @@
 #define UART_INT_ADDR   (REGBLK_SUBSYS_UART_ADDR + 0xC)
 #define UART_BAUD_ADDR  (REGBLK_SUBSYS_UART_ADDR + 0x10)
 #define UART_PID4_ADDR  (REGBLK_SUBSYS_UART_ADDR + 0xFD0) #0x04
-#define UART_BAUT_COE   (50000000l / 115200)
+#define UART_BAUT_COE   (HZ / 115200)
 
 #define REGBLK_SUBSYS_PLIC_ADDR 0x51000
 #define PLIC_PRI_BASE_ADDR      (REGBLK_SUBSYS_PLIC_ADDR + 0x0)
@@ -107,12 +107,12 @@ void sys_init()
 	uart_init();
 }
 
-void trap_handle(uint32_t mepc, uint32_t mcause, uint32_t mtval, uint32_t mtsatus, uint32_t timel, uint32_t timeh)
+void trap_handle(uint32_t mepc, uint32_t mcause, uint32_t mtval, uint32_t mstatus, uint32_t timel, uint32_t timeh)
 {
 	unsigned long long time_val;
 	unsigned long long timel_val, timeh_val;
 	// printf("Enter trap_handle!\r\n");
-	printf("Enter trap_handle! mepc=%x mcause=%x mtval=%x mtsatus=%x timel=%u timeh=%u\r\n", mepc, mcause, mtval, mtsatus, timel, timeh);
+	printf("Enter trap_handle! mepc=%x mcause=%x mtval=%x mstatus=%x timel=%u timeh=%u\r\n", mepc, mcause, mtval, mstatus, timel, timeh);
 	timel_val = *(volatile uint32_t *)0x50004;
 	timeh_val = *(volatile uint32_t *)0x50008;
 	time_val  = ((timeh_val << 32) | timel_val) + 0x2FAF080;
@@ -203,7 +203,7 @@ static void printf_d(int val)
 
 int printf(const char *fmt, ...)
 {
-    char    buf[2048], *p;
+    char    buf[1024], *p;
     va_list args;
     int     n = 0;
 

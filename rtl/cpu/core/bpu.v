@@ -52,8 +52,8 @@ wire bp_taken;
 reg [N_ADDR_W-1:0] wrptr;
 wire[N_ADDR_W-1:0] next_wrptr;
 
-reg [N_ADDR_W:0]   ras_wrptr;
-wire[N_ADDR_W:0]   next_ras_wrptr;
+reg [N_ADDR_W-1:0] ras_wrptr;
+wire[N_ADDR_W-1:0] next_ras_wrptr;
 
 `ifdef BPU_FUNC0
 

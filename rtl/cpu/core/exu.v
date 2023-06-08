@@ -38,7 +38,7 @@ module exu (
     // from id
     input id2iex_csr_we,
     input id2iex_csr_re,
-    input [2:0]  id2iex_csr_sel,
+    input [3:0]  id2iex_csr_sel,
     input [31:0] id2iex_csr_rd,
     // from id
     // read and write registers / reg bus	
@@ -155,7 +155,7 @@ module exu (
     reg [11:0] reg_iex_csr;	
     reg        reg_iex_csr_we;
     reg        reg_iex_csr_re;
-    reg [2:0]  reg_iex_csr_sel;
+    reg [3:0]  reg_iex_csr_sel;
     reg [31:0] reg_iex_csr_rd;
 
     reg [31:0] reg_iex_rf_rd1;
@@ -190,7 +190,7 @@ module exu (
             reg_iex_rs2        <= 5'h0;
             reg_iex_csr_we     <= `DEASSERT;
             reg_iex_csr_re     <= `DEASSERT;
-            reg_iex_csr_sel    <= 3'h0;
+            reg_iex_csr_sel    <= 4'h0;
             reg_iex_csr_rd     <= `WORD_DEASSERT;
             reg_iex_bp_taken   <= `DEASSERT;
             reg_iex_bp_match   <= `DEASSERT;
@@ -318,7 +318,7 @@ module exu (
     wire [31:0] alu_out;
     wire alu_comp_out, pc_src1;
     assign alu_op1 = reg_iex_csr_sel[1] ? iex_csr_rd : iex_rd1_src;
-    assign alu_op2 = reg_iex_csr_sel[0] ? ~iex_rd1_src 
+    assign alu_op2 = reg_iex_csr_sel[0] ? (reg_iex_csr_sel[3] ? ~iex_rd1_src : iex_rd1_src) 
                    : reg_iex_alu_op2_sel ? reg_iex_imm 
                    : iex_rd2_src;
 
@@ -462,10 +462,12 @@ module exu (
     // wire [2:0]   inst_func3;
     wire [4:0]   inst_func5;
     wire [6:0]   inst_func7;
+    wire [11:0]  inst_func12;
     assign inst_op_type       = reg_iex_inst[6:2];
     assign inst_func7         = reg_iex_inst[31:25];
     assign inst_func3         = reg_iex_inst[14:12];
     assign inst_func5         = reg_iex_inst[24:20];
+    assign inst_func12        = reg_iex_inst[31:20];
     //TRI
     wire is_inst_func5_tri;
     wire is_inst_func3_null;
@@ -475,9 +477,18 @@ module exu (
     assign is_i_tri_imi_type  = iex2lsu_valid && (inst_op_type == `I_INST_OPCODE_4  );
     assign is_mret            = is_i_tri_imi_type && is_inst_func3_null && is_inst_func5_tri && (inst_func7 == `I_INST_FUNC7_MRET);
 
+    wire is_i_ecall_ebreak_type;
+    wire is_ecall;
+    assign is_i_ecall_ebreak_type = is_i_tri_imi_type;
+    assign is_ecall           = is_i_ecall_ebreak_type && is_inst_func3_null && (inst_func12 == `I_INST_FUNC12_ECALL);
+
     //fixme
-    assign iex_except_valid   = 1'b0;
-    assign iex_except_code    = 4'h0;
+    // exception code of ecall machine
+    localparam EXC_CODE_ECALL_M  = 5'hb;
+    // assign iex_except_valid   = 1'b0;
+    // assign iex_except_code    = 4'h0;
+    assign iex_except_valid   = is_ecall;
+    assign iex_except_code    = is_ecall ? EXC_CODE_ECALL_M : 5'h0;
     assign iex_valid          = iex2lsu_valid;
     assign iex_pc             = reg_iex_pc;
     assign iex_next_pc        = reg_iex_pc_src0            ? iex_jalr_pc

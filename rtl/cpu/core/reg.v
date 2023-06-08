@@ -183,7 +183,10 @@ module csr
     localparam STI                 = 5'h5;
     localparam MTI                 = 5'h7;
     localparam SEI                 = 5'h9;
-    localparam MEI                 = 5'h11;
+    localparam MEI                 = 5'hb; //11
+
+    localparam CSR_MSTATUS_MPP     = 2'b11; // machine mode only
+    localparam CSR_MSTATUS_SPP     = 1'b0;  // machine mode only
     //machine trap setup
     wire [31:0] csr_misa;
     // reg [31:0] csr_medeleg;
@@ -294,6 +297,8 @@ module csr
     wire mstatus_upie,  mstatus_spie,  mstatus_mpie;
     wire mstatus_uie_d, mstatus_sie_d, mstatus_mie_d;
     wire mstatus_upie_d,mstatus_spie_d,mstatus_mpie_d;
+    wire mstatus_spp;
+    wire [1:0] mstatus_mpp;
     wire mstatus_wr_en;
     wire mstatus_rd_en;
     wire mstatus_uie_sie_wr_en;
@@ -330,7 +335,23 @@ module csr
     assign mstatus_mpie_d= irq_en        ? mstatus_mie
                          : mret_en       ? 1'b1
                          : mstatus_mpie;    
-    assign csr_mstatus   = {{24{1'b0}}, mstatus_mpie, 1'b0, mstatus_spie, mstatus_upie, mstatus_mie, 1'b0, mstatus_sie, mstatus_uie};
+    assign mstatus_spp   = CSR_MSTATUS_SPP;
+    assign mstatus_MPP   = CSR_MSTATUS_MPP;
+
+    assign csr_mstatus   = {
+                            {19{1'b0}},
+                            mstatus_mpp,   // [12:11]
+                            2'b00,         // [10:9] WPRI
+                            mstatus_spp,   // 8 SPP
+                            mstatus_mpie,  // 7
+                            1'b0,          // 6 WPRI
+                            mstatus_spie,  // 5
+                            mstatus_upie,  // 4
+                            mstatus_mie,   // 3
+                            1'b0,          // 2 WPRI
+                            mstatus_sie,   // 1
+                            mstatus_uie    // 0
+                           };
     assign rdata_mstatus = mstatus_rd_en ? csr_mstatus : `WORD_DEASSERT;
     stdffre #(1) ff_mstatus_uie_u (
         .clk(clk),

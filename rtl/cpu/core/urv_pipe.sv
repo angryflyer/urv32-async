@@ -141,7 +141,7 @@ logic [31:0] csr2id_rd;
 //id to iex
 logic        id2iex_csr_we;
 logic        id2iex_csr_re;
-logic [2:0]  id2iex_csr_sel;
+logic [3:0]  id2iex_csr_sel;
 logic [31:0] id2iex_csr_rd;
 //iex to csr
 logic        iex2csr_wren;

@@ -297,7 +297,19 @@ stdffrem #(PLIC_PRI_W) ff_plic_pri_thres_u (
     .d(ff_wdata[PLIC_PRI_W-1:0]),
     .q(ff_plic_pri_thres)    
 );
-assign ext_irq = unsigned'(plic_pri_mux_out[PLIC_IRQ_N-1]) > unsigned'(ff_plic_pri_thres);
+
+// great than compare
+logic plic_pri_gtu_cmp;
+logic ff_plic_pri_gtu_cmp;
+assign plic_pri_gtu_cmp = plic_pri_mux_out[PLIC_IRQ_N-1] > ff_plic_pri_thres;
+assign ext_irq          = ff_plic_pri_gtu_cmp;
+
+delay_2cycle ff_plic_pri_gtu_cmp_u (
+    .clk(clk),
+    .rstn(rstn),
+    .d(plic_pri_gtu_cmp),
+    .q(ff_plic_pri_gtu_cmp)
+);
 
 stdffre #(PLIC_CLAIM_W) ff_plic_claim_complete_u (
     .clk(clk),

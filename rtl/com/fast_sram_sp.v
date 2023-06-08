@@ -43,8 +43,8 @@ wire rd_en;
 reg  [N_DW-1:0] ff_dout;
 assign rd_en = ~csn & wen;
 always @(posedge clk) begin
-    ff_dout <= rd_en ? mem[addr] : {N_DW{1'b0}};
-    // ff_dout <= mem[addr];
+    // ff_dout <= rd_en ? mem[addr] : {N_DW{1'b0}};
+    if(rd_en) ff_dout <= mem[addr];
 end
 
 assign dout = ff_dout;

@@ -8,7 +8,7 @@ ENTRY(_start)
 MEMORY
 {
     ROM (rx)      : ORIGIN = 0x80000000, LENGTH = 0x20000 /* entire ROM, 10000->64KB, 20000->128KB */
-    RAM (xrw)     : ORIGIN = 0x80020000, LENGTH = 0x20000 /* entire RAM, 10000->64KB, 20000->128KB */
+    RAM (xrw)     : ORIGIN = 0x80080000, LENGTH = 0x20000 /* entire RAM, 10000->64KB, 20000->128KB */
 }
 
 SECTIONS {

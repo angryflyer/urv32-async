@@ -52,7 +52,7 @@ CFLAGS += \
 # Each log level which less or equal LOG_LELVEL will be open, see driver/log.h
 MACROS = -DLOG_LEVEL=2
 MACROS += -DBOOT_FROM_ROM
-MACROS += -DHZ=50*1000*1000
+MACROS += -DHZ=72*1000*1000
 # MACROS += -DREG
 #-----------------------------------------------------------
 # Define all object files.
